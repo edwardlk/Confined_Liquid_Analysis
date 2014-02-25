@@ -1,4 +1,11 @@
-## Need to add commands to pull files from data folder
+################################################################################
+##
+##A program to analyze raw data to produce stiffness and damping curves as a
+##function of distance.
+##
+##To do:
+##- Need to add commands to pull files from data folder, rather than having to
+##  manually insert names.
 
 import time
 
