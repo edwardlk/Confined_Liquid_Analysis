@@ -1,0 +1,177 @@
+import time
+
+start = time.time()
+
+import math
+import numpy as np
+from numpy import *
+from pylab import *
+import matplotlib.pyplot as plt
+
+# Functions
+
+def Deflection(Ipd, Sensitivity):
+    return (Ipd * 1000) * 10**(-10) / Sensitivity
+
+def Movement(point):
+    return (281.6 - 0.55 * point) * 10**(-10)
+
+def Amplitude(ExtIn, V_cell, Sensitivity, Slope):
+    return math.sqrt(2) * (V_cell - ExtIn) * (Sensitivity / 10) / Slope
+
+def Phase(ADC1):
+    return ADC1 * 180 / 9
+
+def Stiffness(k_L, A_0, phi, phi_0, Amplitude):
+    return k_L * (A_0 * math.cos(math.pi * (phi - phi_0) / 180) / Amplitude - 1)
+
+def Damping(k_L, A_0, phi, phi_0, Amplitude, frequency):
+    return (k_L * A_0 * math.sin(math.pi * (phi - phi_0) / 180) / (Amplitude *
+            2 * math.pi * frequency))
+
+def smooth(x,window_len,window):
+
+    if x.ndim != 1:
+        raise ValueError('smooth only accepts 1-D array')
+    if x.size < window_len:
+        raise ValueError('input vectoir mut be larger than window size')
+    if window_len < 3:
+        return quantity
+    if not window in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
+        raise ValueError("Window must be: 'flat', 'hanning', 'hamming', 'bartlett', or 'blackman'")
+
+    end = window_len - int(window_len)/2
+
+    #print end
+    
+    s=np.r_[x[window_len-1:0:-1],x,x[-1:-window_len:-1]]
+
+    if window == 'flat': #moving average
+        w=np.ones(window_len,'d')
+    else:
+        w=eval('np.'+window+'(window_len)')
+
+    y=np.convolve(w/w.sum(),s,mode='valid')
+    
+    return y[window_len-end:-window_len+end]
+
+# Overall Constants
+
+constants = genfromtxt('Constants.txt', skip_header=2)
+
+slope = constants[0]           # Slope [mV/Ang]
+batt = constants[1]            # Battery Voltage [V]
+sens = constants[2]            # Sensitivity [mV]
+A_0 = constants[3]             # Free amplitude [Ang]
+phi_0 = constants[4]           # Phase [deg]
+f = constants[5]               # Oscillation Frequency [Hz]
+k_L = constants[6]             # Cantilever stiffness [N/m]
+
+for x in range(1, 17):
+    currentfile = 'TEST-4.8.13-%d.txt' % x 
+    currentpic  = 'TEST-4.8.13-%d.png' % x
+    outputfile  = 'TEST-4.8.13-%d.output.txt' % x
+
+    data = genfromtxt(currentfile, skip_header=20, skip_footer=1)
+        
+    rows = data.shape[0]
+    columns = data.shape[1]
+                                # These will become:
+    Index = np.zeros(rows)      # Index
+    Distance = np.zeros(rows)   # Distance
+    Ipd = np.zeros(rows)        # Photo Diode Current
+    Extin = np.zeros(rows)      # External Input
+    ADC1 = np.zeros(rows)       # Spare ADC Channel 1
+    ADC2 = np.zeros(rows)       # Spare ADC Channel 2
+
+    for x1 in range(0, rows):
+        Index[x1] = data[x1, 0]
+        Distance[x1] = data[x1, 1]
+        Ipd[x1] = data[x1, 3]
+        Extin[x1] = data[x1, 4]
+        ADC1[x1] = data[x1, 5]
+        ADC2[x1] = data[x1, 6]
+                                # These will become:
+    pos = np.zeros(rows)        # Actual Position (d+z)
+    amp = np.zeros(rows)        # Amplitude
+    phi = np.zeros(rows)        # Phase
+    k_ts = np.zeros(rows)       # Interaction Stiffness
+    gamma = np.zeros(rows)      # Damping Coefficient
+
+    k_tsavg = np.zeros(rows)    # Interaction Stiffness
+
+    for x2 in range(0, rows):
+        phi[x2] = Phase(ADC1[x2])
+        amp[x2] = Amplitude(Extin[x2], batt, sens, slope)
+
+    phi0 = max(phi)
+    A0 = max(amp)
+    
+    for x2 in range(0, rows):
+        pos[x2] = Deflection(Ipd[x2], sens) + Movement(x2)
+        phi[x2] = Phase(ADC1[x2])
+        k_ts[x2] = Stiffness(k_L, A0, phi[x2], phi0, amp[x2])
+        gamma[x2] = Damping(k_L, A0, phi[x2], phi0, amp[x2], f)
+
+    k_tsavg = smooth(k_ts,11,'hamming')
+    gammaavg = smooth(gamma,11,'hamming')
+
+    #Output Calculations
+    output = np.column_stack((Distance, pos, amp, phi, k_ts, k_tsavg, gamma))
+
+    np.savetxt(outputfile, output, header="Distance Position Amplitude Phase\
+    Stiffness Stiffness_avg Damping", comments="")
+
+##    # PLOT COMPARISON OF SMOOTHING METHODS
+##
+##    windows=['flat', 'hanning', 'hamming', 'bartlett', 'blackman']
+##    
+##    plot(Distance, k_ts)
+##    for w in windows:
+##            plot(Distance, smooth(k_ts,11,w))
+##    
+##    l=['original signal']
+##    l.extend(windows)
+##    
+##    legend(l, loc=2)
+##    title("Smoothing k_ts")
+##    show()
+##    ##savefig(currentpic)
+
+    # PLOT CALCULATED VALUES
+
+    fig = plt.figure()
+    ax1 = fig.add_subplot(211)
+    ax1.plot(Distance, Extin, 'r.')
+    # ax1.set_xlabel('Distance (Angstroms)')
+    ax1.set_ylabel('Extin (V)', color='r')
+    for tl in ax1.get_yticklabels():
+        tl.set_color('r')
+            
+    ax2 = ax1.twinx()
+    ax2.plot(Distance, ADC1, 'b.')
+    ax2.set_ylabel('ADC Ch 2 (V)', color='b')
+    for tl in ax2.get_yticklabels():
+        tl.set_color('b')
+
+    ax3 = fig.add_subplot(212)
+    ax3.plot(Distance, k_tsavg, 'r.')
+    ax3.set_xlabel('Distance (Angstroms)')
+    ax3.set_ylabel('Stiffness', color='r')
+    for tl in ax3.get_yticklabels():
+        tl.set_color('r')
+            
+    ax4 = ax3.twinx()
+    ax4.plot(Distance, gammaavg, 'b.')
+    ax4.set_ylabel('Damping Coefficient', color='b')
+    for tl in ax4.get_yticklabels():
+        tl.set_color('b')
+
+    plt.subplots_adjust(left = 0.1, right = 0.85)
+
+    plt.savefig(currentpic)
+    ##plt.show()
+
+    plt.close()
+    
+print 'It took', time.time()-start, 'seconds.'
