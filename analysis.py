@@ -6,6 +6,10 @@
 ##To do:
 ##- Need to add commands to pull files from data folder, rather than having to
 ##  manually insert names.
+##- GUI interface?
+##- clean up functions (i.e. convert Phase to rad)
+##- Add list of necessary packages to README
+
 
 import time
 
