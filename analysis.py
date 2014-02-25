@@ -1,3 +1,5 @@
+## Need to add commands to pull files from data folder
+
 import time
 
 start = time.time()
