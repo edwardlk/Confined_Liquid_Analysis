@@ -4,7 +4,6 @@
 ##function of distance.
 ##
 ##To do:
-##- Adjust "constants.txt" handeling to allow for changes in values
 ##- GUI interface?
 ##- clean up functions (i.e. convert Phase to rad)
 ##- Add list of necessary packages to README
@@ -112,8 +111,6 @@ dataImg = outputFiles(dataFiles, '.png')
 
 constants = genfromtxt(conLoc, skip_header=1)
 
-print dataFiles
-
 for x in range(len(dataFiles)):
     currentfile = dataFiles[x] 
     currentpic  = dataImg[x]
@@ -149,18 +146,14 @@ for x in range(len(dataFiles)):
 
     for x2 in range(0, rows):
         phi[x2] = Phase(ADC1[x2])
-##        amp[x2] = Amplitude(Extin[x2], batt, sens, slope)
         amp[x2] = Amplitude(Extin[x2], constants[x,2], constants[x,3], constants[x,1])
 
     phi0 = max(phi)
     A0 = max(amp)
     
     for x2 in range(0, rows):
-##        pos[x2] = Deflection(Ipd[x2], sens) + Movement(x2)
         pos[x2] = Deflection(Ipd[x2], constants[x,3]) + Movement(x2)
         phi[x2] = Phase(ADC1[x2])
-##        k_ts[x2] = Stiffness(k_L, A0, phi[x2], phi0, amp[x2])
-##        gamma[x2] = Damping(k_L, A0, phi[x2], phi0, amp[x2], f)
         k_ts[x2] = Stiffness(constants[x,7], A0, phi[x2], phi0, amp[x2])
         gamma[x2] = Damping(constants[x,7], A0, phi[x2], phi0, amp[x2], constants[x,6])
 
@@ -170,8 +163,8 @@ for x in range(len(dataFiles)):
     #Output Calculations
     output = np.column_stack((Distance, pos, amp, phi, k_ts, k_tsavg, gamma))
 
-    np.savetxt(path.join(dstDir,currentfile), output, header="Distance Position\
-               Amplitude Phase Stiffness Stiffness_avg Damping", comments="")
+    np.savetxt(path.join(dstDir,outputfile), output, header="Distance Position\
+                Amplitude Phase Stiffness Stiffness_avg Damping", comments="")
 
 ##    # PLOT COMPARISON OF SMOOTHING METHODS
 ##
