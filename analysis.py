@@ -15,11 +15,13 @@ import time
 
 start = time.time()
 
+from os import *
 import math
-import numpy as np
-from numpy import *
+import numpy as np   #
+from numpy import *  # Need to try to condense these two
 from pylab import *
 import matplotlib.pyplot as plt
+import Tkinter, tkFileDialog
 
 # Functions
 
@@ -74,6 +76,18 @@ def outputFiles(dataFiles, addon):
         temp = dataFiles[x]
         L.append(temp[:-4] + addon)
     return L
+
+## Designate input and output directories.
+
+root = Tkinter.tk()
+root.withdraw()
+
+info = 'Please select the folder that contains the data files you wish to analyze.'
+
+srcDir = tkFileDialog.askdirectory(parent=root, initialdir="/", title=info)
+dstDir = path.join(srcDir, 'output')
+
+## Get file List
 
 # Overall Constants
 
