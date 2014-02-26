@@ -68,6 +68,13 @@ def smooth(x,window_len,window):
     
     return y[window_len-end:-window_len+end]
 
+def outputFiles(dataFiles, addon):
+    L = []
+    for x in range(len(dataFiles)):
+        temp = dataFiles[x]
+        L.append(temp[:-4] + addon)
+    return L
+
 # Overall Constants
 
 constants = genfromtxt('Constants.txt', skip_header=2)
