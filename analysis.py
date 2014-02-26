@@ -4,11 +4,11 @@
 ##function of distance.
 ##
 ##To do:
-##- Need to add commands to pull files from data folder, rather than having to
-##  manually insert names. - done on laptop under \scripts
+##- Adjust "constants.txt" handeling to allow for changes in values
 ##- GUI interface?
 ##- clean up functions (i.e. convert Phase to rad)
 ##- Add list of necessary packages to README
+
 
 
 import time
@@ -79,7 +79,7 @@ def outputFiles(dataFiles, addon):
 
 ## Designate input and output directories.
 
-root = Tkinter.tk()
+root = Tkinter.Tk()
 root.withdraw()
 
 info = 'Please select the folder that contains the data files you wish to analyze.'
@@ -87,125 +87,143 @@ info = 'Please select the folder that contains the data files you wish to analyz
 srcDir = tkFileDialog.askdirectory(parent=root, initialdir="/", title=info)
 dstDir = path.join(srcDir, 'output')
 
-## Get file List
+## Get file list from source directory
 
-# Overall Constants
+dataFiles = listdir(srcDir)
 
-constants = genfromtxt('Constants.txt', skip_header=2)
+info2 = 'Select the file that contains the constants.'
+conLoc = tkFileDialog.askopenfilename(parent=root,initialdir=srcDir,title=info2)
+conFile = path.split(conLoc)[1]
+dataFiles.remove(conFile)
 
-slope = constants[0]           # Slope [mV/Ang]
-batt = constants[1]            # Battery Voltage [V]
-sens = constants[2]            # Sensitivity [mV]
-A_0 = constants[3]             # Free amplitude [Ang]
-phi_0 = constants[4]           # Phase [deg]
-f = constants[5]               # Oscillation Frequency [Hz]
-k_L = constants[6]             # Cantilever stiffness [N/m]
+##Make output directory if it does not exist
+##if the directory does exist, deletes 'output' from dataFiles
+if not path.exists(dstDir):
+    makedirs(dstDir)
+else:
+    dataFiles.remove('output')
 
-for x in range(1, 17):
-    currentfile = 'TEST-4.8.13-%d.txt' % x 
-    currentpic  = 'TEST-4.8.13-%d.png' % x
-    outputfile  = 'TEST-4.8.13-%d.output.txt' % x
+##Create output files' names
+dataOutput = outputFiles(dataFiles, '-output.txt')
+dataImg = outputFiles(dataFiles, '.png')
 
-    data = genfromtxt(currentfile, skip_header=20, skip_footer=1)
-        
-    rows = data.shape[0]
-    columns = data.shape[1]
-                                # These will become:
-    Index = np.zeros(rows)      # Index
-    Distance = np.zeros(rows)   # Distance
-    Ipd = np.zeros(rows)        # Photo Diode Current
-    Extin = np.zeros(rows)      # External Input
-    ADC1 = np.zeros(rows)       # Spare ADC Channel 1
-    ADC2 = np.zeros(rows)       # Spare ADC Channel 2
-
-    for x1 in range(0, rows):
-        Index[x1] = data[x1, 0]
-        Distance[x1] = data[x1, 1]
-        Ipd[x1] = data[x1, 3]
-        Extin[x1] = data[x1, 4]
-        ADC1[x1] = data[x1, 5]
-        ADC2[x1] = data[x1, 6]
-                                # These will become:
-    pos = np.zeros(rows)        # Actual Position (d+z)
-    amp = np.zeros(rows)        # Amplitude
-    phi = np.zeros(rows)        # Phase
-    k_ts = np.zeros(rows)       # Interaction Stiffness
-    gamma = np.zeros(rows)      # Damping Coefficient
-
-    k_tsavg = np.zeros(rows)    # Interaction Stiffness
-
-    for x2 in range(0, rows):
-        phi[x2] = Phase(ADC1[x2])
-        amp[x2] = Amplitude(Extin[x2], batt, sens, slope)
-
-    phi0 = max(phi)
-    A0 = max(amp)
-    
-    for x2 in range(0, rows):
-        pos[x2] = Deflection(Ipd[x2], sens) + Movement(x2)
-        phi[x2] = Phase(ADC1[x2])
-        k_ts[x2] = Stiffness(k_L, A0, phi[x2], phi0, amp[x2])
-        gamma[x2] = Damping(k_L, A0, phi[x2], phi0, amp[x2], f)
-
-    k_tsavg = smooth(k_ts,11,'hamming')
-    gammaavg = smooth(gamma,11,'hamming')
-
-    #Output Calculations
-    output = np.column_stack((Distance, pos, amp, phi, k_ts, k_tsavg, gamma))
-
-    np.savetxt(outputfile, output, header="Distance Position Amplitude Phase\
-    Stiffness Stiffness_avg Damping", comments="")
-
-##    # PLOT COMPARISON OF SMOOTHING METHODS
+### Overall Constants
 ##
-##    windows=['flat', 'hanning', 'hamming', 'bartlett', 'blackman']
+##constants = genfromtxt('Constants.txt', skip_header=2)
+##
+##slope = constants[0]           # Slope [mV/Ang]
+##batt = constants[1]            # Battery Voltage [V]
+##sens = constants[2]            # Sensitivity [mV]
+##A_0 = constants[3]             # Free amplitude [Ang]
+##phi_0 = constants[4]           # Phase [deg]
+##f = constants[5]               # Oscillation Frequency [Hz]
+##k_L = constants[6]             # Cantilever stiffness [N/m]
+##
+##for x in range(1, 17):
+##    currentfile = 'TEST-4.8.13-%d.txt' % x 
+##    currentpic  = 'TEST-4.8.13-%d.png' % x
+##    outputfile  = 'TEST-4.8.13-%d.output.txt' % x
+##
+##    data = genfromtxt(currentfile, skip_header=20, skip_footer=1)
+##        
+##    rows = data.shape[0]
+##    columns = data.shape[1]
+##                                # These will become:
+##    Index = np.zeros(rows)      # Index
+##    Distance = np.zeros(rows)   # Distance
+##    Ipd = np.zeros(rows)        # Photo Diode Current
+##    Extin = np.zeros(rows)      # External Input
+##    ADC1 = np.zeros(rows)       # Spare ADC Channel 1
+##    ADC2 = np.zeros(rows)       # Spare ADC Channel 2
+##
+##    for x1 in range(0, rows):
+##        Index[x1] = data[x1, 0]
+##        Distance[x1] = data[x1, 1]
+##        Ipd[x1] = data[x1, 3]
+##        Extin[x1] = data[x1, 4]
+##        ADC1[x1] = data[x1, 5]
+##        ADC2[x1] = data[x1, 6]
+##                                # These will become:
+##    pos = np.zeros(rows)        # Actual Position (d+z)
+##    amp = np.zeros(rows)        # Amplitude
+##    phi = np.zeros(rows)        # Phase
+##    k_ts = np.zeros(rows)       # Interaction Stiffness
+##    gamma = np.zeros(rows)      # Damping Coefficient
+##
+##    k_tsavg = np.zeros(rows)    # Interaction Stiffness
+##
+##    for x2 in range(0, rows):
+##        phi[x2] = Phase(ADC1[x2])
+##        amp[x2] = Amplitude(Extin[x2], batt, sens, slope)
+##
+##    phi0 = max(phi)
+##    A0 = max(amp)
 ##    
-##    plot(Distance, k_ts)
-##    for w in windows:
-##            plot(Distance, smooth(k_ts,11,w))
+##    for x2 in range(0, rows):
+##        pos[x2] = Deflection(Ipd[x2], sens) + Movement(x2)
+##        phi[x2] = Phase(ADC1[x2])
+##        k_ts[x2] = Stiffness(k_L, A0, phi[x2], phi0, amp[x2])
+##        gamma[x2] = Damping(k_L, A0, phi[x2], phi0, amp[x2], f)
+##
+##    k_tsavg = smooth(k_ts,11,'hamming')
+##    gammaavg = smooth(gamma,11,'hamming')
+##
+##    #Output Calculations
+##    output = np.column_stack((Distance, pos, amp, phi, k_ts, k_tsavg, gamma))
+##
+##    np.savetxt(outputfile, output, header="Distance Position Amplitude Phase\
+##    Stiffness Stiffness_avg Damping", comments="")
+##
+####    # PLOT COMPARISON OF SMOOTHING METHODS
+####
+####    windows=['flat', 'hanning', 'hamming', 'bartlett', 'blackman']
+####    
+####    plot(Distance, k_ts)
+####    for w in windows:
+####            plot(Distance, smooth(k_ts,11,w))
+####    
+####    l=['original signal']
+####    l.extend(windows)
+####    
+####    legend(l, loc=2)
+####    title("Smoothing k_ts")
+####    show()
+####    ##savefig(currentpic)
+##
+##    # PLOT CALCULATED VALUES
+##
+##    fig = plt.figure()
+##    ax1 = fig.add_subplot(211)
+##    ax1.plot(Distance, Extin, 'r.')
+##    # ax1.set_xlabel('Distance (Angstroms)')
+##    ax1.set_ylabel('Extin (V)', color='r')
+##    for tl in ax1.get_yticklabels():
+##        tl.set_color('r')
+##            
+##    ax2 = ax1.twinx()
+##    ax2.plot(Distance, ADC1, 'b.')
+##    ax2.set_ylabel('ADC Ch 2 (V)', color='b')
+##    for tl in ax2.get_yticklabels():
+##        tl.set_color('b')
+##
+##    ax3 = fig.add_subplot(212)
+##    ax3.plot(Distance, k_tsavg, 'r.')
+##    ax3.set_xlabel('Distance (Angstroms)')
+##    ax3.set_ylabel('Stiffness', color='r')
+##    for tl in ax3.get_yticklabels():
+##        tl.set_color('r')
+##            
+##    ax4 = ax3.twinx()
+##    ax4.plot(Distance, gammaavg, 'b.')
+##    ax4.set_ylabel('Damping Coefficient', color='b')
+##    for tl in ax4.get_yticklabels():
+##        tl.set_color('b')
+##
+##    plt.subplots_adjust(left = 0.1, right = 0.85)
+##
+##    plt.savefig(currentpic)
+##    ##plt.show()
+##
+##    plt.close()
 ##    
-##    l=['original signal']
-##    l.extend(windows)
-##    
-##    legend(l, loc=2)
-##    title("Smoothing k_ts")
-##    show()
-##    ##savefig(currentpic)
-
-    # PLOT CALCULATED VALUES
-
-    fig = plt.figure()
-    ax1 = fig.add_subplot(211)
-    ax1.plot(Distance, Extin, 'r.')
-    # ax1.set_xlabel('Distance (Angstroms)')
-    ax1.set_ylabel('Extin (V)', color='r')
-    for tl in ax1.get_yticklabels():
-        tl.set_color('r')
-            
-    ax2 = ax1.twinx()
-    ax2.plot(Distance, ADC1, 'b.')
-    ax2.set_ylabel('ADC Ch 2 (V)', color='b')
-    for tl in ax2.get_yticklabels():
-        tl.set_color('b')
-
-    ax3 = fig.add_subplot(212)
-    ax3.plot(Distance, k_tsavg, 'r.')
-    ax3.set_xlabel('Distance (Angstroms)')
-    ax3.set_ylabel('Stiffness', color='r')
-    for tl in ax3.get_yticklabels():
-        tl.set_color('r')
-            
-    ax4 = ax3.twinx()
-    ax4.plot(Distance, gammaavg, 'b.')
-    ax4.set_ylabel('Damping Coefficient', color='b')
-    for tl in ax4.get_yticklabels():
-        tl.set_color('b')
-
-    plt.subplots_adjust(left = 0.1, right = 0.85)
-
-    plt.savefig(currentpic)
-    ##plt.show()
-
-    plt.close()
-    
-print 'It took', time.time()-start, 'seconds.'
+##print 'It took', time.time()-start, 'seconds.'
