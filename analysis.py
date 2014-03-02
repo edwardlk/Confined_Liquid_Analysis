@@ -91,7 +91,7 @@ info2 = 'Select the file that contains the constants.'
 conLoc = tkFileDialog.askopenfilename(parent=root,initialdir=srcDir,title=info2)
 conFile = path.split(conLoc)[1]
 
-if confile in dataFiles:
+if conFile in dataFiles:
     dataFiles.remove(conFile)
 
 ##Make output directory if it does not exist
