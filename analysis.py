@@ -54,8 +54,6 @@ def smooth(x,window_len,window):
 
     end = window_len - int(window_len)/2
 
-    #print end
-    
     s=np.r_[x[window_len-1:0:-1],x,x[-1:-window_len:-1]]
 
     if window == 'flat': #moving average
@@ -87,11 +85,14 @@ dstDir = path.join(srcDir, 'output')
 ## Get file list from source directory
 
 dataFiles = listdir(srcDir)
+dataFiles.sort()
 
 info2 = 'Select the file that contains the constants.'
 conLoc = tkFileDialog.askopenfilename(parent=root,initialdir=srcDir,title=info2)
 conFile = path.split(conLoc)[1]
-dataFiles.remove(conFile)
+
+if confile in dataFiles:
+    dataFiles.remove(conFile)
 
 ##Make output directory if it does not exist
 ##if the directory does exist, deletes 'output' from dataFiles
