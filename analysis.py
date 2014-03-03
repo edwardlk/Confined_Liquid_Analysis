@@ -10,8 +10,6 @@
 
 import time
 
-start = time.time()
-
 from os import *
 import math
 import numpy as np   #
@@ -90,6 +88,8 @@ dataFiles.sort()
 info2 = 'Select the file that contains the constants.'
 conLoc = tkFileDialog.askopenfilename(parent=root,initialdir=srcDir,title=info2)
 conFile = path.split(conLoc)[1]
+
+start = time.time()
 
 if conFile in dataFiles:
     dataFiles.remove(conFile)
@@ -219,4 +219,5 @@ for x in range(len(dataFiles)):
 
     plt.close()
     
-print 'It took', time.time()-start, 'seconds.'
+print "Finished analyzing", path.split(srcDir)[1]
+print 'It took {:.2f} seconds to analyze %d files.'.format(time.time()-start) % (len(dataFiles))
