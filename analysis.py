@@ -35,8 +35,10 @@ def Phase(ADC1):
 def Stiffness(k_L, A_0, phi, phi_0, Amplitude):
     return k_L * (A_0 * math.cos(math.pi * (phi - phi_0) / 180) / Amplitude - 1)
 
+## Changed angle to mach data analys done by shah ob 2-22-11 CsCl Data
+## not sure why the -19?
 def Damping(k_L, A_0, phi, phi_0, Amplitude, frequency):
-    return (k_L * A_0 * math.sin(math.pi * (phi - phi_0) / 180) / (Amplitude *
+    return (k_L * A_0 * math.sin(math.pi * (phi - phi_0 - 19) / 180) / (Amplitude *
             2 * math.pi * frequency))
 
 def smooth(x,window_len,window):
@@ -149,7 +151,7 @@ for x in range(len(dataFiles)):
         phi[x2] = Phase(ADC1[x2])
         amp[x2] = Amplitude(Extin[x2], constants[x,2], constants[x,3], constants[x,1])
 
-    phi0 = max(phi)
+    phi0 = phi[0]  ## changed to match shah analysis
     A0 = max(amp)
     
     for x2 in range(0, rows):
