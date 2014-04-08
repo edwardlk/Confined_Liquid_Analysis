@@ -33,13 +33,12 @@ def Phase(ADC1):
     return ADC1 * 180 / 9
 
 def Stiffness(k_L, A_0, phi, phi_0, Amplitude):
-    return k_L * (A_0 * math.cos(math.pi * (phi - phi_0) / 180) / Amplitude - 1)
+    return k_L * (A_0 * math.cos(math.pi * (phi - phi_0 - 19) / 180) / Amplitude - 1)
 
 ## Changed angle to mach data analys done by shah ob 2-22-11 CsCl Data
 ## not sure why the -19?
 def Damping(k_L, A_0, phi, phi_0, Amplitude, frequency):
-    return (k_L * A_0 * math.sin(math.pi * (phi - phi_0 - 19) / 180) / (Amplitude *
-            2 * math.pi * frequency))
+    return -(k_L * A_0 * math.sin(math.pi * (phi - phi_0 - 19) / 180) / (Amplitude * 2 * math.pi * frequency))
 
 def smooth(x,window_len,window):
 
@@ -152,13 +151,14 @@ for x in range(len(dataFiles)):
         amp[x2] = Amplitude(Extin[x2], constants[x,2], constants[x,3], constants[x,1])
 
     phi0 = phi[0]  ## changed to match shah analysis
-    A0 = max(amp)
-    
-    for x2 in range(0, rows):
-        pos[x2] = Deflection(Ipd[x2], constants[x,3]) + Movement(x2)
-        phi[x2] = Phase(ADC1[x2])
-        k_ts[x2] = Stiffness(constants[x,7], A0, phi[x2], phi0, amp[x2])
-        gamma[x2] = Damping(constants[x,7], A0, phi[x2], phi0, amp[x2], constants[x,6])
+    A0 = amp[8]
+    Amax = max(amp[:99])
+
+    for x3 in range(0, rows):
+        pos[x3] = Deflection(Ipd[x3], constants[x,3]) + Movement(x3)
+        phi[x3] = Phase(ADC1[x3])
+        k_ts[x3] = Stiffness(constants[x,7], Amax, phi[x3], phi0, amp[x3])
+        gamma[x3] = Damping(constants[x,7], A0, phi[x3], phi0, amp[x3], constants[x,6])
 
     k_tsavg = smooth(k_ts,11,'hamming')
     gammaavg = smooth(gamma,11,'hamming')
@@ -202,14 +202,14 @@ for x in range(len(dataFiles)):
         tl.set_color('b')
 
     ax3 = fig.add_subplot(212)
-    ax3.plot(Distance, k_tsavg, 'r.')
+    ax3.plot(Distance, k_ts, 'r.')
     ax3.set_xlabel('Distance (Angstroms)')
     ax3.set_ylabel('Stiffness', color='r')
     for tl in ax3.get_yticklabels():
         tl.set_color('r')
             
     ax4 = ax3.twinx()
-    ax4.plot(Distance, gammaavg, 'b.')
+    ax4.plot(Distance, gamma, 'b.')
     ax4.set_ylabel('Damping Coefficient', color='b')
     for tl in ax4.get_yticklabels():
         tl.set_color('b')
