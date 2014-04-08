@@ -1,12 +1,14 @@
 ################################################################################
 ##
-##A program to analyze raw data to produce stiffness and damping curves as a
-##function of distance.
+## A program to analyze raw data to produce stiffness and damping curves as a
+## function of distance.
 ##
-##To do:
-##- GUI interface?
-##- clean up functions (i.e. convert Phase to rad)
-##- Add list of necessary packages to README
+## To do:
+## - GUI interface?
+## - clean up functions (i.e. convert Phase to rad)
+## - Add list of necessary packages to README
+## - % complete printouts
+## - error handling for folder/file selection 
 
 import time
 
