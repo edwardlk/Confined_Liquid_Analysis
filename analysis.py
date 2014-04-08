@@ -33,12 +33,14 @@ def Phase(ADC1):
     return ADC1 * 180 / 9
 
 def Stiffness(k_L, A_0, phi, phi_0, Amplitude):
-    return k_L * (A_0 * math.cos(math.pi * (phi - phi_0 - 19) / 180) / Amplitude - 1)
+    return k_L * (A_0 * math.cos(math.pi * (phi - phi_0 - 19) / 180) /
+                  Amplitude - 1)
 
 ## Changed angle to mach data analys done by shah ob 2-22-11 CsCl Data
 ## not sure why the -19?
 def Damping(k_L, A_0, phi, phi_0, Amplitude, frequency):
-    return -(k_L * A_0 * math.sin(math.pi * (phi - phi_0 - 19) / 180) / (Amplitude * 2 * math.pi * frequency))
+    return -(k_L * A_0 * math.sin(math.pi * (phi - phi_0 - 19) / 180) /
+             (Amplitude * 2 * math.pi * frequency))
 
 def smooth(x,window_len,window):
 
@@ -49,7 +51,8 @@ def smooth(x,window_len,window):
     if window_len < 3:
         return quantity
     if not window in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
-        raise ValueError("Window must be: 'flat', 'hanning', 'hamming', 'bartlett', or 'blackman'")
+        raise ValueError("Window must be: 'flat', 'hanning', 'hamming',\
+                         'bartlett', or 'blackman'")
 
     end = window_len - int(window_len)/2
 
@@ -76,7 +79,8 @@ def outputFiles(dataFiles, addon):
 root = Tkinter.Tk()
 root.withdraw()
 
-info = 'Please select the folder that contains the data files you wish to analyze.'
+info = 'Please select the folder that contains\
+the data files you wish to analyze.'
 
 srcDir = tkFileDialog.askdirectory(parent=root, initialdir="/", title=info)
 dstDir = path.join(srcDir, 'output')
@@ -118,7 +122,8 @@ for x in range(len(dataFiles)):
     currentpic  = dataImg[x]
     outputfile  = dataOutput[x]
 
-    data = genfromtxt(path.join(srcDir,currentfile), skip_header=20, skip_footer=1)
+    data = genfromtxt(path.join(srcDir,currentfile), skip_header=20,
+                      skip_footer=1)
         
     rows = data.shape[0]
     columns = data.shape[1]
@@ -148,7 +153,8 @@ for x in range(len(dataFiles)):
 
     for x2 in range(0, rows):
         phi[x2] = Phase(ADC1[x2])
-        amp[x2] = Amplitude(Extin[x2], constants[x,2], constants[x,3], constants[x,1])
+        amp[x2] = Amplitude(Extin[x2], constants[x,2], constants[x,3],
+                            constants[x,1])
 
     phi0 = phi[0]  ## changed to match shah analysis
     A0 = amp[8]
@@ -158,16 +164,19 @@ for x in range(len(dataFiles)):
         pos[x3] = Deflection(Ipd[x3], constants[x,3]) + Movement(x3)
         phi[x3] = Phase(ADC1[x3])
         k_ts[x3] = Stiffness(constants[x,7], Amax, phi[x3], phi0, amp[x3])
-        gamma[x3] = Damping(constants[x,7], A0, phi[x3], phi0, amp[x3], constants[x,6])
+        gamma[x3] = Damping(constants[x,7], A0, phi[x3], phi0, amp[x3],
+                            constants[x,6])
 
     k_tsavg = smooth(k_ts,11,'hamming')
     gammaavg = smooth(gamma,11,'hamming')
 
     #Output Calculations
-    output = np.column_stack((Distance, pos, amp, phi, k_ts, k_tsavg, gamma))
+    output = np.column_stack((Distance, pos, amp, phi, k_ts, k_tsavg, gamma,
+                              gammaavg))
 
     np.savetxt(path.join(dstDir,outputfile), output, header="Distance Position\
-                Amplitude Phase Stiffness Stiffness_avg Damping", comments="")
+               Amplitude Phase Stiffness Stiffness_avg Damping Damping_avg",
+               comments="")
 
 ##    # PLOT COMPARISON OF SMOOTHING METHODS
 ##
@@ -202,14 +211,14 @@ for x in range(len(dataFiles)):
         tl.set_color('b')
 
     ax3 = fig.add_subplot(212)
-    ax3.plot(Distance, k_ts, 'r.')
+    ax3.plot(Distance, k_tsavg, 'r.')
     ax3.set_xlabel('Distance (Angstroms)')
     ax3.set_ylabel('Stiffness', color='r')
     for tl in ax3.get_yticklabels():
         tl.set_color('r')
             
     ax4 = ax3.twinx()
-    ax4.plot(Distance, gamma, 'b.')
+    ax4.plot(Distance, gammaavg, 'b.')
     ax4.set_ylabel('Damping Coefficient', color='b')
     for tl in ax4.get_yticklabels():
         tl.set_color('b')
