@@ -79,7 +79,7 @@ def outputFiles(dataFiles, addon):
 root = Tkinter.Tk()
 root.withdraw()
 
-info = 'Please select the folder that contains\
+info = 'Please select the folder that contains \
 the data files you wish to analyze.'
 
 srcDir = tkFileDialog.askdirectory(parent=root, initialdir="/", title=info)
