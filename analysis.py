@@ -38,11 +38,14 @@ def Stiffness(k_L, A_0, phi, phi_0, Amplitude):
     return k_L * (A_0 * math.cos(math.pi * (phi - phi_0 - 19) / 180) /
                   Amplitude - 1)
 
-## Changed angle to mach data analys done by shah ob 2-22-11 CsCl Data
+				  ## Changed angle to mach data analys done by shah ob 2-22-11 CsCl Data
 ## not sure why the -19?
 def Damping(k_L, A_0, phi, phi_0, Amplitude, frequency):
     return -(k_L * A_0 * math.sin(math.pi * (phi - phi_0 - 19) / 180) /
              (Amplitude * 2 * math.pi * frequency))
+
+def Relaxation(k_ts, gamma, f):
+	return k_ts / (gamma * (2 * math.pi * f)**2)
 
 def smooth(x,window_len,window):
 
@@ -150,6 +153,7 @@ for x in range(len(dataFiles)):
     phi = np.zeros(rows)        # Phase
     k_ts = np.zeros(rows)       # Interaction Stiffness
     gamma = np.zeros(rows)      # Damping Coefficient
+	t_R = np.zeros(rows)		# Relaxation Time
 
     k_tsavg = np.zeros(rows)    # Interaction Stiffness
 
@@ -171,14 +175,17 @@ for x in range(len(dataFiles)):
 
     k_tsavg = smooth(k_ts,11,'hamming')
     gammaavg = smooth(gamma,11,'hamming')
+	
+	for x4 in range(0, rows):
+		t_R = Relaxation(k_tsavg[x4], gammaavg[x4], constants[x,6])
 
     #Output Calculations
     output = np.column_stack((Distance, pos, amp, phi, k_ts, k_tsavg, gamma,
-                              gammaavg))
+                              gammaavg, t_R))
 
-    np.savetxt(path.join(dstDir,outputfile), output, header="Distance Position\
-               Amplitude Phase Stiffness Stiffness_avg Damping Damping_avg",
-               comments="")
+    np.savetxt(path.join(dstDir,outputfile), output, header="Distance Position \
+			   Amplitude Phase Stiffness Stiffness_avg Damping Damping_avg \
+			   Relaxation_Time", comments="")
 
 ##    # PLOT COMPARISON OF SMOOTHING METHODS
 ##
