@@ -153,7 +153,7 @@ for x in range(len(dataFiles)):
     phi = np.zeros(rows)        # Phase
     k_ts = np.zeros(rows)       # Interaction Stiffness
     gamma = np.zeros(rows)      # Damping Coefficient
-	t_R = np.zeros(rows)		# Relaxation Time
+    t_R = np.zeros(rows)	# Relaxation Time
 
     k_tsavg = np.zeros(rows)    # Interaction Stiffness
 
@@ -176,8 +176,8 @@ for x in range(len(dataFiles)):
     k_tsavg = smooth(k_ts,11,'hamming')
     gammaavg = smooth(gamma,11,'hamming')
 	
-	for x4 in range(0, rows):
-		t_R = Relaxation(k_tsavg[x4], gammaavg[x4], constants[x,6])
+    for x4 in range(0, rows):
+        t_R[x4] = Relaxation(k_tsavg[x4], gammaavg[x4], constants[x,6])
 
     #Output Calculations
     output = np.column_stack((Distance, pos, amp, phi, k_ts, k_tsavg, gamma,
