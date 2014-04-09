@@ -206,7 +206,7 @@ for x in range(len(dataFiles)):
     # PLOT CALCULATED VALUES
 
     fig = plt.figure()
-    ax1 = fig.add_subplot(211)
+    ax1 = fig.add_subplot(311)
     ax1.plot(Distance, Extin, 'r.')
     # ax1.set_xlabel('Distance (Angstroms)')
     ax1.set_ylabel('Extin (V)', color='r')
@@ -219,7 +219,7 @@ for x in range(len(dataFiles)):
     for tl in ax2.get_yticklabels():
         tl.set_color('b')
 
-    ax3 = fig.add_subplot(212)
+    ax3 = fig.add_subplot(312)
     ax3.plot(Distance, k_tsavg, 'r.')
     ax3.set_xlabel('Distance (Angstroms)')
     ax3.set_ylabel('Stiffness', color='r')
@@ -230,6 +230,19 @@ for x in range(len(dataFiles)):
     ax4.plot(Distance, gammaavg, 'b.')
     ax4.set_ylabel('Damping Coefficient', color='b')
     for tl in ax4.get_yticklabels():
+        tl.set_color('b')
+
+    ax5 = fig.add_subplot(313)
+    ax5.plot(Distance, k_tsavg, 'r.')
+    ax5.set_xlabel('Distance (Angstroms)')
+    ax5.set_ylabel('Stiffness', color='r')
+    for tl in ax5.get_yticklabels():
+        tl.set_color('r')
+            
+    ax6 = ax5.twinx()
+    ax6.plot(Distance, t_R, 'b.')
+    ax6.set_ylabel('Damping Coefficient', color='b')
+    for tl in ax6.get_yticklabels():
         tl.set_color('b')
 
     plt.subplots_adjust(left = 0.1, right = 0.85)
