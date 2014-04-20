@@ -241,7 +241,7 @@ for x in range(len(dataFiles)):
             
     ax6 = ax5.twinx()
     ax6.plot(Distance, t_R, 'b.')
-    ax6.set_ylabel('Damping Coefficient', color='b')
+    ax6.set_ylabel('Relaxation Time', color='b')
     for tl in ax6.get_yticklabels():
         tl.set_color('b')
 
