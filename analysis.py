@@ -223,12 +223,14 @@ for x in range(len(dataFiles)):
     ax3.plot(Distance, k_tsavg, 'r.')
     ax3.set_xlabel('Distance (Angstroms)')
     ax3.set_ylabel('Stiffness', color='r')
+    ax3.set_ylim([0, 12])
     for tl in ax3.get_yticklabels():
         tl.set_color('r')
             
     ax4 = ax3.twinx()
     ax4.plot(Distance, gammaavg, 'b.')
     ax4.set_ylabel('Damping Coefficient', color='b')
+    ax4.set_ylim([0, 0.002])
     for tl in ax4.get_yticklabels():
         tl.set_color('b')
 
@@ -236,12 +238,14 @@ for x in range(len(dataFiles)):
     ax5.plot(Distance, k_tsavg, 'r.')
     ax5.set_xlabel('Distance (Angstroms)')
     ax5.set_ylabel('Stiffness', color='r')
+    ax5.set_ylim([0, 12])
     for tl in ax5.get_yticklabels():
         tl.set_color('r')
             
     ax6 = ax5.twinx()
     ax6.plot(Distance, t_R, 'b.')
     ax6.set_ylabel('Relaxation Time', color='b')
+    ax6.set_ylim([0, 0.010])
     for tl in ax6.get_yticklabels():
         tl.set_color('b')
 
