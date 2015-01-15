@@ -54,7 +54,7 @@ def smooth(x,window_len,window):
         w=eval('np.'+window+'(window_len)')
 
     y=np.convolve(w/w.sum(),s,mode='valid')
-    
+
     return y[window_len-end:-window_len+end]
 
 ## Designate data file to analyze.
@@ -130,7 +130,7 @@ for x3 in range(0, rows):
 
 k_tsavg = smooth(k_ts,11,'hamming')
 gammaavg = smooth(gamma,11,'hamming')
-    
+
 for x4 in range(0, rows):
     t_R[x4] = Relaxation(k_tsavg[x4], gammaavg[x4], constants[x,6])
 
@@ -143,7 +143,7 @@ ax1.plot(Distance, Extin, 'r.')
 ax1.set_ylabel('Extin (V)', color='r')
 for tl in ax1.get_yticklabels():
     tl.set_color('r')
-        
+
 ax2 = ax1.twinx()
 ax2.plot(Distance, ADC1, 'b.')
 ax2.set_ylabel('ADC Ch 2 (V)', color='b')
@@ -157,7 +157,7 @@ ax3.set_ylabel('Stiffness', color='r')
 ax3.set_ylim([0, 12])
 for tl in ax3.get_yticklabels():
     tl.set_color('r')
-        
+
 ax4 = ax3.twinx()
 ax4.plot(Distance, gammaavg, 'b.')
 ax4.set_ylabel('Damping Coefficient', color='b')
@@ -172,7 +172,7 @@ ax5.set_ylabel('Stiffness', color='r')
 ax5.set_ylim([0, 12])
 for tl in ax5.get_yticklabels():
     tl.set_color('r')
-        
+
 ax6 = ax5.twinx()
 ax6.plot(Distance, t_R, 'b.')
 ax6.set_ylabel('Relaxation Time', color='b')
@@ -181,6 +181,7 @@ for tl in ax6.get_yticklabels():
     tl.set_color('b')
 
 plt.subplots_adjust(left = 0.1, right = 0.85)
+plt.suptitle("Curve %d @ %d $\AA$/s" % (fileNum,constants[x,8]))
 
 plt.show()
 
