@@ -250,7 +250,7 @@ for x in range(len(dataFiles)):
         tl.set_color('b')
 
     plt.subplots_adjust(left = 0.1, right = 0.85)
-    plt.suptitle("Curve %d @ %d $\AA$/s" % (fileNum,constants[x,8]))
+    plt.suptitle("Curve %d @ %d $\AA$/s" % (x+1,constants[x,8]))
 
     plt.savefig(path.join(dstDir,currentpic))
     ##plt.show()
