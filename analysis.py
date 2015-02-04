@@ -79,6 +79,12 @@ def outputFiles(dataFiles, addon):
         L.append(temp[:-4] + addon)
     return L
 
+def graphMax(quantity,minMax):
+    if np.amax(quantity) > minMax:
+        return np.amax(quantity)
+    else:
+        return minMax
+
 ## Designate input and output directories.
 
 root = Tkinter.Tk()
@@ -223,14 +229,14 @@ for x in range(len(dataFiles)):
     ax3.plot(Distance, k_tsavg, 'r.')
     ax3.set_xlabel('Distance (Angstroms)')
     ax3.set_ylabel('Stiffness', color='r')
-    ax3.set_ylim([0, 12])
+    ax3.set_ylim([0, graphMax(k_ts,12)])
     for tl in ax3.get_yticklabels():
         tl.set_color('r')
 
     ax4 = ax3.twinx()
     ax4.plot(Distance, gammaavg, 'b.')
     ax4.set_ylabel('Damping Coefficient', color='b')
-    ax4.set_ylim([0, 0.002])
+    ax4.set_ylim([0, graphMax(gammaavg,0.002)])
     for tl in ax4.get_yticklabels():
         tl.set_color('b')
 
@@ -238,7 +244,7 @@ for x in range(len(dataFiles)):
     ax5.plot(Distance, k_tsavg, 'r.')
     ax5.set_xlabel('Distance (Angstroms)')
     ax5.set_ylabel('Stiffness', color='r')
-    ax5.set_ylim([0, 12])
+    ax5.set_ylim([0, graphMax(k_tsavg,12)])
     for tl in ax5.get_yticklabels():
         tl.set_color('r')
 
