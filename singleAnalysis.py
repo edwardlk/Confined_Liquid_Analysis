@@ -57,6 +57,12 @@ def smooth(x,window_len,window):
 
     return y[window_len-end:-window_len+end]
 
+def graphMax(quantity,minMax):
+    if np.amax(quantity) > minMax:
+        return np.amax(quantity)
+    else:
+        return minMax
+
 ## Designate data file to analyze.
 
 root = Tkinter.Tk()
@@ -154,14 +160,14 @@ ax3 = fig.add_subplot(312)
 ax3.plot(Distance, k_tsavg, 'r.')
 ax3.set_xlabel('Distance (Angstroms)')
 ax3.set_ylabel('Stiffness', color='r')
-ax3.set_ylim([0, 12])
+ax3.set_ylim([0, graphMax(k_ts,12)])
 for tl in ax3.get_yticklabels():
     tl.set_color('r')
 
 ax4 = ax3.twinx()
 ax4.plot(Distance, gammaavg, 'b.')
 ax4.set_ylabel('Damping Coefficient', color='b')
-ax4.set_ylim([0, 0.002])
+ax4.set_ylim([0, graphMax(gammaavg,0.002)])
 for tl in ax4.get_yticklabels():
     tl.set_color('b')
 
@@ -169,7 +175,7 @@ ax5 = fig.add_subplot(313)
 ax5.plot(Distance, k_tsavg, 'r.')
 ax5.set_xlabel('Distance (Angstroms)')
 ax5.set_ylabel('Stiffness', color='r')
-ax5.set_ylim([0, 12])
+ax5.set_ylim([0, graphMax(k_tsavg,12)])
 for tl in ax5.get_yticklabels():
     tl.set_color('r')
 
@@ -184,5 +190,4 @@ plt.subplots_adjust(left = 0.1, right = 0.85)
 plt.suptitle("Curve %d @ %d $\AA$/s" % (fileNum,constants[x,8]))
 
 plt.show()
-
-plt.close()
+plt.close('all')
