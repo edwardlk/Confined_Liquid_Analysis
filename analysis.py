@@ -128,6 +128,15 @@ dataImg = outputFiles(dataFiles, '.png')
 
 constants = genfromtxt(conLoc, skip_header=1)
 
+## TEST 06-25-2015: getting list of speeds from constant file
+## working
+
+speeds = sorted(set(constants[:,8]))
+
+print speeds
+
+## End TEST
+
 for x in range(len(dataFiles)):
     currentfile = dataFiles[x]
     currentpic  = dataImg[x]
