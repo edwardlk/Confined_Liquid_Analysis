@@ -82,6 +82,10 @@ def graphMax(quantity,minMax):
         return np.amax(quantity)
     else:
         return minMax
+##
+csvHeader = ("Index,Distance(Ang),Tunnel(nA),Ipd(mV),Extin(V),"
+              "SpareAdcCh1(V),SpareAdcCh2(V),RTunnel(nA),RIpd(mV),"
+              "RExtin(V),RSpareAdcCh1(V),RSpareAdcCh2(V)")
 
 ## Designate input and output directories.
 
@@ -93,6 +97,7 @@ the data files you wish to analyze.'
 
 srcDir = tkFileDialog.askdirectory(parent=root, initialdir="/", title=info)
 dstDir = path.join(srcDir, 'output')
+csvDir = path.join(srcDir, 'csv')
 
 ## Get file list from source directory
 
@@ -114,10 +119,15 @@ if not path.exists(dstDir):
     makedirs(dstDir)
 else:
     dataFiles.remove('output')
+if not path.exists(csvDir):
+    makedirs(csvDir)
+else:
+    dataFiles.remove('csv')
 
 ##Create output files' names
 dataOutput = outputFiles(dataFiles, '-output.txt')
 dataImg = outputFiles(dataFiles, '.png')
+csvOutput = outputFiles(dataFiles, '.csv')
 
 # Overall Constants
 #   To get particular values, use constants[n-1,m]
@@ -127,11 +137,17 @@ dataImg = outputFiles(dataFiles, '.png')
 constants = genfromtxt(conLoc, skip_header=1)
 
 ## TEST 06-25-2015: getting list of speeds from constant file
-## working
+## ???
 
 speeds = sorted(set(constants[:,8]))
 
-print speeds
+for x in range(len(dataFiles)):
+    currentfile = dataFiles[x]
+    outputfile  = csvOutput[x]
+
+    data = genfromtxt(path.join(srcDir,currentfile), skip_header=20, skip_footer=1)
+
+    np.savetxt(path.join(dstDir,outputfile),data,header=csvHeader,delimiter=',')
 
 ## End TEST
 
