@@ -35,13 +35,11 @@ def Phase(ADC1):
     return ADC1 * 180 / 9
 
 def Stiffness(k_L, A_0, phi, phi_0, Amplitude):
-    return k_L * (A_0 * math.cos(math.pi * (phi - phi_0 - 19) / 180) /
+    return k_L * (A_0 * math.cos(math.pi * (phi - phi_0) / 180) /
                   Amplitude - 1)
 
-				  ## Changed angle to mach data analys done by shah ob 2-22-11 CsCl Data
-## not sure why the -19?
 def Damping(k_L, A_0, phi, phi_0, Amplitude, frequency):
-    return -(k_L * A_0 * math.sin(math.pi * (phi - phi_0 - 19) / 180) /
+    return -(k_L * A_0 * math.sin(math.pi * (phi - phi_0) / 180) /
              (Amplitude * 2 * math.pi * frequency))
 
 def Relaxation(k_ts, gamma, f):
