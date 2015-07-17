@@ -147,7 +147,7 @@ for x in range(len(dataFiles)):
 
     data = genfromtxt(path.join(srcDir,currentfile), skip_header=20, skip_footer=1)
 
-    np.savetxt(path.join(dstDir,outputfile),data,header=csvHeader,delimiter=',')
+    np.savetxt(path.join(csvDir,outputfile),data,header=csvHeader,delimiter=',')
 
 ## End TEST
 
