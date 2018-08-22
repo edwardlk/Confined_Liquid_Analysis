@@ -132,7 +132,7 @@ csvOutput = outputFiles(dataFiles, '.csv')
 # Overall Constants
 #   To get particular values, use constants[n-1,m]
 #   n = file number
-#   m = [index, slope, V_batt, sens, Amp, Phase, freq, stiff, vel]
+#   m = [index, slope, V_batt, sens, t_c, Phase_off, freq, stiff, vel, Temp]
 
 constants = genfromtxt(conLoc, skip_header=1)
 
@@ -156,10 +156,10 @@ for x in range(len(dataFiles)):
 	currentpic  = dataImg[x]
 	outputfile  = dataOutput[x]
 	data = genfromtxt(path.join(srcDir,currentfile), skip_header=20, skip_footer=1)
-	
+
 	rows = data.shape[0]
 	columns = data.shape[1]
-	
+
 	Index = np.zeros(rows)      # Index
 	Distance = np.zeros(rows)   # Distance
 	Ipd = np.zeros(rows)        # Photo Diode Current
@@ -276,7 +276,7 @@ for x in range(len(dataFiles)):
 		tl.set_color('b')
 
 	plt.subplots_adjust(left = 0.1, right = 0.85)
-	plt.suptitle("Curve %d @ %d $\AA$/s" % (x+1,constants[x,8]))
+	plt.suptitle("Curve %d: %d $\AA$/s @ %.1f \u2103" % (x+1,constants[x,8],constants[x,9]))
 
 	plt.savefig(path.join(dstDir,currentpic))
 	##plt.show()
