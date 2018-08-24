@@ -18,7 +18,8 @@ import numpy as np   #
 from numpy import *  # Need to try to condense these two
 from pylab import *
 import matplotlib.pyplot as plt
-import tkinter #, tkFileDialog
+from tkinter import Tk, filedialog
+#from tkinter import  #, tkFileDialog
 
 # Functions
 
@@ -89,13 +90,13 @@ csvHeader = ("Index,Distance(Ang),Tunnel(nA),Ipd(mV),Extin(V),"
 
 ## Designate input and output directories.
 
-root = tkinter.Tk()
+root = Tk()
 root.withdraw()
 
 info = 'Please select the folder that contains \
 the data files you wish to analyze.'
 
-srcDir = tkinter.filedialog.askdirectory(parent=root, initialdir="/", title=info)
+srcDir = filedialog.askdirectory(parent=root, initialdir="/", title=info)
 dstDir = path.join(srcDir, 'output')
 csvDir = path.join(srcDir, 'csv')
 
@@ -105,7 +106,7 @@ dataFiles = listdir(srcDir)
 dataFiles.sort()
 
 info2 = 'Select the file that contains the constants.'
-conLoc = tkinter.filedialog.askopenfilename(parent=root,initialdir=srcDir,title=info2)
+conLoc = filedialog.askopenfilename(parent=root,initialdir=srcDir,title=info2)
 conFile = path.split(conLoc)[1]
 
 start = time.time()
