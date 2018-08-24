@@ -221,7 +221,7 @@ for x in range(len(dataFiles)):
 
     plt.subplots_adjust(left=0.1, right=0.85)
     plt.suptitle(
-        r'Curve %d: %d $\AA$/s @ %.1f \u2103' %
+        r'Curve %d: %d $\AA$/s @ %.1f C' %
         (x+1, constants[x, 8], constants[x, 9]))
 
     plt.savefig(path.join(dstDir, currentpic))
