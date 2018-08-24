@@ -19,7 +19,6 @@ from numpy import *  # Need to try to condense these two
 from pylab import *
 import matplotlib.pyplot as plt
 from tkinter import Tk, filedialog
-#from tkinter import  #, tkFileDialog
 
 # Functions
 
@@ -142,6 +141,7 @@ constants = genfromtxt(conLoc, skip_header=1)
 
 speeds = sorted(set(constants[:,8]))
 
+## Create CSVs
 for x in range(len(dataFiles)):
     currentfile = dataFiles[x]
     outputfile  = csvOutput[x]
@@ -150,8 +150,7 @@ for x in range(len(dataFiles)):
 
     np.savetxt(path.join(csvDir,outputfile),data,header=csvHeader,delimiter=',')
 
-## End TEST
-
+## Main analysis
 for x in range(len(dataFiles)):
 	currentfile = dataFiles[x]
 	currentpic  = dataImg[x]
