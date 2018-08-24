@@ -116,7 +116,7 @@ for x in range(len(dataFiles)):
         Extin[x1] = data[x1, 4]
         ADC1[x1] = data[x1, 5]
         ADC2[x1] = data[x1, 6]
-                                # These will become:
+
     pos = np.zeros(rows)        # Actual Position (d+z)
     amp = np.zeros(rows)        # Amplitude
     phi = np.zeros(rows)        # Phase
@@ -221,7 +221,7 @@ for x in range(len(dataFiles)):
 
     plt.subplots_adjust(left=0.1, right=0.85)
     plt.suptitle(
-        "Curve %d: %d $\AA$/s @ %.1f \u2103" %
+        r'Curve %d: %d $\AA$/s @ %.1f \u2103' %
         (x+1, constants[x, 8], constants[x, 9]))
 
     plt.savefig(path.join(dstDir, currentpic))
@@ -229,6 +229,6 @@ for x in range(len(dataFiles)):
 
     plt.close()
 
-print("Finished analyzing", path.split(srcDir)[1])
+print('Finished analyzing', path.split(srcDir)[1])
 print('It took {:.2f} seconds to analyze %d files.'.format(time.time()-start) %
       (len(dataFiles)))
