@@ -12,13 +12,21 @@ from CLfuncs import Relaxation, smooth, graphMax  # , outputFiles
 root = Tk()
 root.withdraw()
 
-info = 'Please select the data file you wish to analyze.'
-dataLoc = filedialog.askopenfilename(parent=root, initialdir="/", title=info)
-dataFile = path.split(dataLoc)[1]
+fileAsk = False
+if fileAsk:
+    info = 'Please select the data file you wish to analyze.'
+    dataLoc = filedialog.askopenfilename(parent=root, initialdir="/",
+                                         title=info)
+    info2 = 'Select the file that contains the constants.'
+    conLoc = filedialog.askopenfilename(parent=root, title=info2,
+                                        initialdir=path.split(dataLoc)[0])
+    print("dataLoc =", dataLoc)
+    print("conLoc =", conLoc)
+else:
+    dataLoc = 'C:/Users/ekram/Desktop/2018-08-20_LTAFM-Testing/temp-001.txt'
+    conLoc = 'C:/Users/ekram/Desktop/2018-08-20_LTAFM-Testing/constants.txt'
 
-info2 = 'Select the file that contains the constants.'
-conLoc = filedialog.askopenfilename(parent=root, title=info2,
-                                    initialdir=path.split(dataLoc)[0])
+dataFile = path.split(dataLoc)[1]
 conFile = path.split(conLoc)[1]
 
 # Obtain File Number
