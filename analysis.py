@@ -11,7 +11,6 @@
 # - error handling for folder/file selection
 
 import time
-
 from os import path, listdir, makedirs
 import numpy as np   #
 import matplotlib.pyplot as plt
@@ -26,7 +25,6 @@ csvHeader = (
     'RSpareAdcCh2(V)')
 
 # Designate input and output directories.
-
 root = Tk()
 root.withdraw()
 
@@ -38,7 +36,6 @@ dstDir = path.join(srcDir, 'output')
 csvDir = path.join(srcDir, 'csv')
 
 # Get file list from source directory
-
 dataFiles = listdir(srcDir)
 dataFiles.sort()
 
@@ -52,8 +49,8 @@ start = time.time()
 if conFile in dataFiles:
     dataFiles.remove(conFile)
 
-# Make output directory if it does not exist
-# if the directory does exist, deletes 'output' from dataFiles
+# Make output directories if they do not exist
+# if the directories do exist, deletes from dataFiles
 if not path.exists(dstDir):
     makedirs(dstDir)
 else:
@@ -72,12 +69,9 @@ csvOutput = outputFiles(dataFiles, '.csv')
 #   To get particular values, use constants[n-1,m]
 #   n = file number
 #   m = [index, slope, V_batt, sens, t_c, Phase_off, freq, stiff, vel, Temp]
-
 constants = np.genfromtxt(conLoc, skip_header=1)
 
 # TEST 06-25-2015: getting list of speeds from constant file
-# ???
-
 speeds = sorted(set(constants[:, 8]))
 
 # Create CSVs
@@ -87,7 +81,6 @@ for x in range(len(dataFiles)):
 
     data = np.genfromtxt(path.join(srcDir, currentfile), skip_header=20,
                          skip_footer=1)
-
     np.savetxt(path.join(csvDir, outputfile), data, header=csvHeader,
                delimiter=',')
 
@@ -123,7 +116,6 @@ for x in range(len(dataFiles)):
     k_ts = np.zeros(rows)       # Interaction Stiffness
     gamma = np.zeros(rows)      # Damping Coefficient
     t_R = np.zeros(rows)        # Relaxation Time
-
     k_tsavg = np.zeros(rows)    # Interaction Stiffness
 
     for x2 in range(0, rows):
@@ -157,25 +149,21 @@ for x in range(len(dataFiles)):
                'Stiffness_avg Damping Damping_avg Relaxation_Time',
                comments="")
 
-    #    # PLOT COMPARISON OF SMOOTHING METHODS
-    #
-    #    windows=['flat', 'hanning', 'hamming', 'bartlett', 'blackman']
-    #
-    #    plot(Distance, k_ts)
-    #    for w in windows:
-    #            plot(Distance, smooth(k_ts,11,w))
-    #
-    #    l=['original signal']
-    #    l.extend(windows)
-    #
-    #    legend(l, loc=2)
-    #    title("Smoothing k_ts")
-    #    show()
+    # # PLOT COMPARISON OF SMOOTHING METHODS
+    # windows=['flat', 'hanning', 'hamming', 'bartlett', 'blackman']
+    # plot(Distance, k_ts)
+    # for w in windows:
+    #     plot(Distance, smooth(k_ts, 11, w))
+    # l = ['original signal']
+    # l.extend(windows)
+    # legend(l, loc=2)
+    # title("Smoothing k_ts")
+    # show()
     # savefig(currentpic)
 
     # PLOT CALCULATED VALUES
+    fig = plt.figure(figsize=(6, 7))
 
-    fig = plt.figure()
     ax1 = fig.add_subplot(311)
     ax1.plot(Distance, Extin, 'r.')
     # ax1.set_xlabel('Distance (Angstroms)')
@@ -226,7 +214,6 @@ for x in range(len(dataFiles)):
 
     plt.savefig(path.join(dstDir, currentpic))
     # plt.show()
-
     plt.close()
 
 print('Finished analyzing', path.split(srcDir)[1])
