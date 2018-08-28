@@ -72,3 +72,32 @@ def graphMax(quantity, minMax):
         return np.amax(quantity)
     else:
         return minMax
+
+
+def joinAR(Extin, R_Extin, Distance):
+    step = np.abs(Distance[0] - Distance[1])
+    for x5 in range(len(Extin)):
+        if Extin[x5] == 0 or x5 == len(Extin)-1:
+            ExtinAR1 = np.zeros(x5)
+            ExtinAR2 = np.zeros(x5+1)
+            ExtinAR1 = Extin[:x5]
+            DistAR1 = Distance[:x5] - Distance[x5] - step
+            ExtinAR2 = R_Extin[:x5+1]
+            DistAR2 = abs(Distance[:x5+1] - Distance[x5])
+            ExtinAR = np.append(ExtinAR1, np.flip(ExtinAR2))
+            DistAR = np.append(DistAR1, np.flip(DistAR2))
+            break
+    return ExtinAR, DistAR, x5
+
+
+def joinAR2(Extin, R_Extin, Distance, x5):
+    step = np.abs(Distance[0] - Distance[1])
+    ExtinAR1 = np.zeros(x5)
+    ExtinAR2 = np.zeros(x5+1)
+    ExtinAR1 = Extin[:x5]
+    DistAR1 = Distance[:x5] - Distance[x5] - step
+    ExtinAR2 = R_Extin[:x5+1]
+    DistAR2 = abs(Distance[:x5+1] - Distance[x5])
+    ExtinAR = np.append(ExtinAR1, np.flip(ExtinAR2))
+    DistAR = np.append(DistAR1, np.flip(DistAR2))
+    return ExtinAR, DistAR
