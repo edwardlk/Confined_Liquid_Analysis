@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 from tkinter import Tk, filedialog
 
 from CLfuncs import Deflection, Movement, Amplitude, Phase, Stiffness, Damping
-from CLfuncs import Relaxation, smooth, outputFiles, graphMax
+from CLfuncs import Relaxation, smooth, outputFiles, graphMax, joinAR, joinAR2
 
 csvHeader = (
     'Index,Distance(Ang),Tunnel(nA),Ipd(mV),Extin(V),SpareAdcCh1(V),'
@@ -105,11 +105,20 @@ for x in range(len(dataFiles)):
     gamma = np.zeros(rows)      # Damping Coefficient
     t_R = np.zeros(rows)        # Relaxation Time
     k_tsavg = np.zeros(rows)    # Interaction Stiffness
+    R_amp = np.zeros(rows)        # reverse Amplitude
+    R_phi = np.zeros(rows)        # reverse Phase
+    R_k_ts = np.zeros(rows)       # reverse Interaction Stiffness
+    R_gamma = np.zeros(rows)      # reverse Damping Coefficient
+    R_t_R = np.zeros(rows)        # reverse Relaxation Time
+    R_k_tsavg = np.zeros(rows)    # reverse Interaction Stiffness
 
     for x2 in range(0, rows):
         phi[x2] = Phase(ADC1[x2])
         amp[x2] = Amplitude(Extin[x2], constants[x, 2], constants[x, 3],
                             constants[x, 1])
+        R_phi[x2] = Phase(R_ADC1[x2])
+        R_amp[x2] = Amplitude(R_Extin[x2], constants[x, 2], constants[x, 3],
+                              constants[x, 1])
 
     phi0 = phi[0]  # changed to match shah analysis
     A0 = amp[8]
@@ -121,12 +130,25 @@ for x in range(len(dataFiles)):
         k_ts[x3] = Stiffness(constants[x, 7], Amax, phi[x3], phi0, amp[x3])
         gamma[x3] = Damping(constants[x, 7], A0, phi[x3], phi0, amp[x3],
                             constants[x, 6])
+        R_k_ts[x3] = Stiffness(constants[x, 7], Amax, R_phi[x3], phi0,
+                               R_amp[x3])
+        R_gamma[x3] = Damping(constants[x, 7], A0, R_phi[x3], phi0, R_amp[x3],
+                              constants[x, 6])
 
     k_tsavg = smooth(k_ts, 11, 'hamming')
     gammaavg = smooth(gamma, 11, 'hamming')
+    R_k_tsavg = smooth(R_k_ts, 11, 'hamming')
+    R_gammaavg = smooth(R_gamma, 11, 'hamming')
 
     for x4 in range(0, rows):
         t_R[x4] = Relaxation(k_tsavg[x4], gammaavg[x4], constants[x, 6])
+        R_t_R[x4] = Relaxation(R_k_tsavg[x4], R_gammaavg[x4], constants[x, 6])
+
+    ExtinAR, DistAR, x5 = joinAR(Extin, R_Extin, Distance)
+    ADC1AR, Dist1AR = joinAR2(ADC1, R_ADC1, Distance, x5)
+    k_tsAR, Dist2AR = joinAR2(k_tsavg, R_k_tsavg, Distance, x5)
+    gammaavgAR, Dist3AR = joinAR2(gammaavg, R_gammaavg, Distance, x5)
+    t_RAR, Dist4AR = joinAR2(t_R, R_t_R, Distance, x5)
 
     # Output Calculations
     output = np.column_stack((Distance, pos, amp, phi, k_ts, k_tsavg, gamma,
@@ -153,20 +175,20 @@ for x in range(len(dataFiles)):
     fig = plt.figure(figsize=(6, 7))
 
     ax1 = fig.add_subplot(311)
-    ax1.plot(Distance, Extin, 'r.')
+    ax1.plot(DistAR, ExtinAR, 'r.-')
     # ax1.set_xlabel('Distance (Angstroms)')
     ax1.set_ylabel('Extin (V)', color='r')
     for tl in ax1.get_yticklabels():
         tl.set_color('r')
 
     ax2 = ax1.twinx()
-    ax2.plot(Distance, ADC1, 'b.')
+    ax2.plot(Dist1AR, ADC1AR, 'b.-')
     ax2.set_ylabel('ADC Ch 2 (V)', color='b')
     for tl in ax2.get_yticklabels():
         tl.set_color('b')
 
     ax3 = fig.add_subplot(312)
-    ax3.plot(Distance, k_tsavg, 'r.')
+    ax3.plot(Dist2AR, k_tsAR, 'r.-')
     ax3.set_xlabel('Distance (Angstroms)')
     ax3.set_ylabel('Stiffness', color='r')
     ax3.set_ylim([0, graphMax(k_ts, 12)])
@@ -174,14 +196,14 @@ for x in range(len(dataFiles)):
         tl.set_color('r')
 
     ax4 = ax3.twinx()
-    ax4.plot(Distance, gammaavg, 'b.')
+    ax4.plot(Dist3AR, gammaavgAR, 'b.-')
     ax4.set_ylabel('Damping Coefficient', color='b')
     ax4.set_ylim([0, graphMax(gammaavg, 0.002)])
     for tl in ax4.get_yticklabels():
         tl.set_color('b')
 
     ax5 = fig.add_subplot(313)
-    ax5.plot(Distance, k_tsavg, 'r.')
+    ax5.plot(Dist2AR, k_tsAR, 'r.-')
     ax5.set_xlabel('Distance (Angstroms)')
     ax5.set_ylabel('Stiffness', color='r')
     ax5.set_ylim([0, graphMax(k_tsavg, 12)])
@@ -189,7 +211,7 @@ for x in range(len(dataFiles)):
         tl.set_color('r')
 
     ax6 = ax5.twinx()
-    ax6.plot(Distance, t_R, 'b.')
+    ax6.plot(Dist4AR, t_RAR, 'b.-')
     ax6.set_ylabel('Relaxation Time', color='b')
     ax6.set_ylim([0, 0.010])
     for tl in ax6.get_yticklabels():
