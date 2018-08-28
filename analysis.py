@@ -95,20 +95,8 @@ for x in range(len(dataFiles)):
     rows = data.shape[0]
     columns = data.shape[1]
 
-    Index = np.zeros(rows)      # Index
-    Distance = np.zeros(rows)   # Distance
-    Ipd = np.zeros(rows)        # Photo Diode Current
-    Extin = np.zeros(rows)      # External Input
-    ADC1 = np.zeros(rows)       # Spare ADC Channel 1
-    ADC2 = np.zeros(rows)       # Spare ADC Channel 2
-
-    for x1 in range(0, rows):
-        Index[x1] = data[x1, 0]
-        Distance[x1] = data[x1, 1]
-        Ipd[x1] = data[x1, 3]
-        Extin[x1] = data[x1, 4]
-        ADC1[x1] = data[x1, 5]
-        ADC2[x1] = data[x1, 6]
+    (Index, Distance, Tunnel, Ipd, Extin, ADC1, ADC2, R_Tunnel, R_Ipd, R_Extin,
+        R_ADC1, R_ADC2) = data.T
 
     pos = np.zeros(rows)        # Actual Position (d+z)
     amp = np.zeros(rows)        # Amplitude
