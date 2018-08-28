@@ -175,6 +175,7 @@ for x in range(len(dataFiles)):
     fig = plt.figure(figsize=(6, 7))
 
     ax1 = fig.add_subplot(311)
+    plt.axvline(x=0)
     ax1.plot(DistAR, ExtinAR, 'r.-')
     # ax1.set_xlabel('Distance (Angstroms)')
     ax1.set_ylabel('Extin (V)', color='r')
@@ -188,6 +189,7 @@ for x in range(len(dataFiles)):
         tl.set_color('b')
 
     ax3 = fig.add_subplot(312)
+    plt.axvline(x=0)
     ax3.plot(Dist2AR, k_tsAR, 'r.-')
     ax3.set_xlabel('Distance (Angstroms)')
     ax3.set_ylabel('Stiffness', color='r')
@@ -203,6 +205,7 @@ for x in range(len(dataFiles)):
         tl.set_color('b')
 
     ax5 = fig.add_subplot(313)
+    plt.axvline(x=0)
     ax5.plot(Dist2AR, k_tsAR, 'r.-')
     ax5.set_xlabel('Distance (Angstroms)')
     ax5.set_ylabel('Stiffness', color='r')
@@ -225,6 +228,8 @@ for x in range(len(dataFiles)):
     plt.savefig(path.join(dstDir, currentpic))
     # plt.show()
     plt.close()
+
+    print('File %d of %d completed.' % (x+1, len(dataFiles)))
 
 print('Finished analyzing', path.split(srcDir)[1])
 print('It took {:.2f} seconds to analyze %d files.'.format(time.time()-start) %
