@@ -171,52 +171,60 @@ for x in range(len(dataFiles)):
     # show()
     # savefig(currentpic)
 
+    if len(DistAR) < 207:
+        graphT = 0
+        graphB = len(DistAR)
+    else:
+        temp = int(len(DistAR)/2)
+        graphT = temp - 103
+        graphB = temp + 103
+
     # PLOT CALCULATED VALUES
     fig = plt.figure(figsize=(6, 7))
 
     ax1 = fig.add_subplot(311)
     plt.axvline(x=0)
-    ax1.plot(DistAR, ExtinAR, 'r.-')
+    ax1.plot(DistAR[graphT:graphB], ExtinAR[graphT:graphB], 'r.-')
     # ax1.set_xlabel('Distance (Angstroms)')
     ax1.set_ylabel('Extin (V)', color='r')
     for tl in ax1.get_yticklabels():
         tl.set_color('r')
 
     ax2 = ax1.twinx()
-    ax2.plot(Dist1AR, ADC1AR, 'b.-')
+    ax2.plot(Dist1AR[graphT:graphB], ADC1AR[graphT:graphB], 'b.-')
     ax2.set_ylabel('ADC Ch 2 (V)', color='b')
     for tl in ax2.get_yticklabels():
         tl.set_color('b')
 
     ax3 = fig.add_subplot(312)
     plt.axvline(x=0)
-    ax3.plot(Dist2AR, k_tsAR, 'r.-')
+    ax3.plot(Dist2AR[graphT:graphB], k_tsAR[graphT:graphB], 'r.-')
     ax3.set_xlabel('Distance (Angstroms)')
     ax3.set_ylabel('Stiffness', color='r')
-    ax3.set_ylim([0, graphMax(k_ts, 12)])
+    ax3.set_ylim([0, graphMax(k_tsAR, 12)])
     for tl in ax3.get_yticklabels():
         tl.set_color('r')
 
     ax4 = ax3.twinx()
-    ax4.plot(Dist3AR, gammaavgAR, 'b.-')
+    ax4.plot(Dist3AR[graphT:graphB], gammaavgAR[graphT:graphB], 'b.-')
     ax4.set_ylabel('Damping Coefficient', color='b')
-    ax4.set_ylim([0, graphMax(gammaavg, 0.002)])
+    # ax4.set_ylim([0, graphMax(gammaavg, 0.002)])
     for tl in ax4.get_yticklabels():
         tl.set_color('b')
 
     ax5 = fig.add_subplot(313)
     plt.axvline(x=0)
-    ax5.plot(Dist2AR, k_tsAR, 'r.-')
+    ax5.plot(Dist2AR[graphT:graphB], k_tsAR[graphT:graphB], 'r.-')
     ax5.set_xlabel('Distance (Angstroms)')
     ax5.set_ylabel('Stiffness', color='r')
-    ax5.set_ylim([0, graphMax(k_tsavg, 12)])
+    ax5.set_ylim([0, graphMax(k_tsAR, 12)])
     for tl in ax5.get_yticklabels():
         tl.set_color('r')
 
     ax6 = ax5.twinx()
-    ax6.plot(Dist4AR, t_RAR, 'b.-')
+    ax6.plot(Dist4AR[graphT:graphB], t_RAR[graphT:graphB], 'b.-')
     ax6.set_ylabel('Relaxation Time', color='b')
-    ax6.set_ylim([0, 0.010])
+    ax6.set_ylim([-0.010, 0.010])
     for tl in ax6.get_yticklabels():
         tl.set_color('b')
 
