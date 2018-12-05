@@ -40,13 +40,22 @@ constants = np.genfromtxt(conLoc, skip_header=1)
 
 x = fileNum - 1
 
-# 0:Index 1:Distance(Ang) 2:Tunnel(nA) 3:Ipd(mV) 4:Extin(V) 5:ADC1(V) 6:ADC2(V)
-# 7:R_Tunnel(nA) 8:R_Ipd(mV) 9:R_Extin(V) 10:R_ADC1(V) 11:R_ADC2(V)
-data = np.genfromtxt(dataLoc, skip_header=20, skip_footer=1)
+# # 0:Index 1:Distance(Ang) 2:Tunnel(nA) 3:Ipd(mV) 4:Extin(V) 5:ADC1(V) 6:ADC2(V)
+# # 7:R_Tunnel(nA) 8:R_Ipd(mV) 9:R_Extin(V) 10:R_ADC1(V) 11:R_ADC2(V)
+# data = np.genfromtxt(dataLoc, skip_header=20, skip_footer=1)
+# rows = data.shape[0]
+# columns = data.shape[1]
+# (Index, Distance, Tunnel, Ipd, Extin, ADC1, ADC2, R_Tunnel, R_Ipd, R_Extin,
+#     R_ADC1, R_ADC2) = data.T
+
+# Updated for new electronics & software - 8 ADCs & need to flip the ExtIn
+data = np.genfromtxt(dataLoc, skip_header=21, skip_footer=1)
 rows = data.shape[0]
 columns = data.shape[1]
-(Index, Distance, Tunnel, Ipd, Extin, ADC1, ADC2, R_Tunnel, R_Ipd, R_Extin,
-    R_ADC1, R_ADC2) = data.T
+(Index, Distance, Tunnel, Ipd, Extin, ADC1, ADC2, ADC3, ADC4, ADC5, ADC6,
+    ADC7, ADC8, R_Tunnel, R_Ipd, R_Extin, R_ADC1, R_ADC2, R_ADC3, R_ADC4,
+    R_ADC5, R_ADC6, R_ADC7, R_ADC8) = data.T
+Extin = -Extin
 
 pos = np.zeros(rows)        # Actual Position (d+z)
 amp = np.zeros(rows)        # Amplitude
