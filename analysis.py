@@ -79,7 +79,7 @@ for x in range(len(dataFiles)):
     currentfile = dataFiles[x]
     outputfile = csvOutput[x]
 
-    data = np.genfromtxt(path.join(srcDir, currentfile), skip_header=20,
+    data = np.genfromtxt(path.join(srcDir, currentfile), skip_header=21,
                          skip_footer=1)
     np.savetxt(path.join(csvDir, outputfile), data, header=csvHeader,
                delimiter=',')
@@ -89,14 +89,22 @@ for x in range(len(dataFiles)):
     currentfile = dataFiles[x]
     currentpic = dataImg[x]
     outputfile = dataOutput[x]
-    data = np.genfromtxt(path.join(srcDir, currentfile), skip_header=20,
+
+    # skip_header = 21 for 1.16.13.3 8 ADC data, 21 for 4 ADC data
+    data = np.genfromtxt(path.join(srcDir, currentfile), skip_header=21,
                          skip_footer=1)
 
     rows = data.shape[0]
     columns = data.shape[1]
 
-    (Index, Distance, Tunnel, Ipd, Extin, ADC1, ADC2, R_Tunnel, R_Ipd, R_Extin,
-        R_ADC1, R_ADC2) = data.T
+    # Updated for new electronics & software - 8 ADCs & need to flip the ExtIn
+    # (Index, Distance, Tunnel, Ipd, Extin, ADC1, ADC2, R_Tunnel, R_Ipd, R_Extin,
+    #     R_ADC1, R_ADC2) = data.T
+    (Index, Distance, Tunnel, Ipd, Extin, ADC1, ADC2, ADC3, ADC4, ADC5, ADC6,
+        ADC7, ADC8, R_Tunnel, R_Ipd, R_Extin, R_ADC1, R_ADC2, R_ADC3, R_ADC4,
+        R_ADC5, R_ADC6, R_ADC7, R_ADC8) = data.T
+    Extin = -Extin
+    R_Extin = -R_Extin
 
     pos = np.zeros(rows)        # Actual Position (d+z)
     amp = np.zeros(rows)        # Amplitude
@@ -135,10 +143,10 @@ for x in range(len(dataFiles)):
         R_gamma[x3] = Damping(constants[x, 7], A0, R_phi[x3], phi0, R_amp[x3],
                               constants[x, 6])
 
-    k_tsavg = smooth(k_ts, 11, 'hamming')
-    gammaavg = smooth(gamma, 11, 'hamming')
-    R_k_tsavg = smooth(R_k_ts, 11, 'hamming')
-    R_gammaavg = smooth(R_gamma, 11, 'hamming')
+    k_tsavg = smooth(k_ts, 5, 'hamming')
+    gammaavg = smooth(gamma, 5, 'hamming')
+    R_k_tsavg = smooth(R_k_ts, 5, 'hamming')
+    R_gammaavg = smooth(R_gamma, 5, 'hamming')
 
     for x4 in range(0, rows):
         t_R[x4] = Relaxation(k_tsavg[x4], gammaavg[x4], constants[x, 6])
@@ -201,7 +209,7 @@ for x in range(len(dataFiles)):
     ax3.plot(Dist2AR[graphT:graphB], k_tsAR[graphT:graphB], 'r.-')
     ax3.set_xlabel('Distance (Angstroms)')
     ax3.set_ylabel('Stiffness', color='r')
-    ax3.set_ylim([0, graphMax(k_tsAR, 12)])
+    # ax3.set_ylim([0, graphMax(k_tsAR, 12)])
     for tl in ax3.get_yticklabels():
         tl.set_color('r')
 
