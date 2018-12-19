@@ -24,6 +24,12 @@ csvHeader = (
     'SpareAdcCh2(V),RTunnel(nA),RIpd(mV),RExtin(V),RSpareAdcCh1(V),'
     'RSpareAdcCh2(V)')
 
+csvHeader2 = (
+    'Index,Distance(Ang),Tunnel(nA),Ipd(mV),Extin(V),'
+    'ADC1(V),ADC2(V),ADC3(V),ADC4(V),ADC5(V),ADC6(V),ADC7(V),ADC8(V),'
+    'RTunnel(nA),RIpd(mV),RExtin(V),'
+    'RADC1(V),RADC2(V),RADC3(V),RADC4(V),RADC5(V),RADC6(V),RADC7(V),RADC8(V),')
+
 # Designate input and output directories.
 root = Tk()
 root.withdraw()
@@ -81,7 +87,11 @@ for x in range(len(dataFiles)):
 
     data = np.genfromtxt(path.join(srcDir, currentfile), skip_header=21,
                          skip_footer=1)
-    np.savetxt(path.join(csvDir, outputfile), data, header=csvHeader,
+    for x1 in range(data.shape[0]):
+        if (data[x1,13] == data[x1,14]) and (data[x1,14] == data[x1,15]):
+            data = data[:x1,:]
+            break
+    np.savetxt(path.join(csvDir, outputfile), data, header=csvHeader2,
                delimiter=',')
 
 # Main analysis
