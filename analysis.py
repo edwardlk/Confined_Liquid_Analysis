@@ -102,7 +102,7 @@ for x in range(len(dataFiles)):
     currentpic = dataImg[x]
     outputfile = dataOutput[x]
 
-    # skip_header = 21 for 1.16.13.3 8 ADC data, 21 for 4 ADC data
+    # skip_header = 21 for 1.16.13.3 8 ADC data, 20 for 4 ADC data
     data = np.genfromtxt(path.join(srcDir, currentfile), skip_header=21,
                          skip_footer=1)
 
@@ -110,15 +110,13 @@ for x in range(len(dataFiles)):
     columns = data.shape[1]
 
     # Updated for new electronics & software - 8 ADCs & need to flip the ExtIn
-    # (Index, Distance, Tunnel, Ipd, Extin, ADC1, ADC2, R_Tunnel, R_Ipd, R_Extin,
-    #     R_ADC1, R_ADC2) = data.T
     (Index, Distance, Tunnel, Ipd, Extin, ADC1, ADC2, ADC3, ADC4, ADC5, ADC6,
         ADC7, ADC8, R_Tunnel, R_Ipd, R_Extin, R_ADC1, R_ADC2, R_ADC3, R_ADC4,
         R_ADC5, R_ADC6, R_ADC7, R_ADC8) = data.T
     Extin = -Extin
     R_Extin = -R_Extin
 
-    # Calc speed from ADC3
+    # Calc speed from ADC3, assumes f = 0.4 Hz, change in function if different
     res = fit_sin(Distance, ADC3)
     speed2[x] = res['vel']
 
@@ -265,7 +263,7 @@ for x in range(len(dataFiles)):
 
 output2 = np.column_stack((np.asarray(dataFiles), constants[:, 8], speed2,
                            constants[:, 9]))
-np.savetxt(path.join(dstDir, 'Speeds+Temps'), output2,
+np.savetxt(path.join(dstDir, 'Speeds+Temps.csv'), output2,
            header='Curve Recorded_v Calc_V Temp(C)', comments="")
 
 print('Finished analyzing', path.split(srcDir)[1])
