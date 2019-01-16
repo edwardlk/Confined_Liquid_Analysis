@@ -8,7 +8,7 @@ from tkinter import Tk, filedialog
 from CLfuncs import Deflection, Movement, Amplitude, Phase, Stiffness, Damping
 from CLfuncs import Relaxation, smooth, graphMax, joinAR, joinAR2
 
-fileAsk = False
+fileAsk = True
 if fileAsk:
     # Designate data file to analyze.
     root = Tk()

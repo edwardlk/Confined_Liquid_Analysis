@@ -103,28 +103,29 @@ def joinAR2(Extin, R_Extin, Distance, x5):
     DistAR = np.append(DistAR1, np.flip(DistAR2))
     return ExtinAR, DistAR
 
+
 def fit_sin(xx, yy):
     '''Fit sin to the input distance sequence, and return fitting parameters
         "amp", "wave_num", "phase", "offset", "wave_len", "vel" and
         "fitfunc"'''
     xx = np.array(xx)
     yy = np.array(yy)
-    ff = np.fft.fftfreq(len(xx), (xx[1]-xx[0])) # assume uniform spacing
+    ff = np.fft.fftfreq(len(xx), (xx[1]-xx[0]))  # assume uniform spacing
     Fyy = abs(np.fft.fft(yy))
-    guess_freq = abs(ff[np.argmax(Fyy[1:])+1])  # excluding the zero frequency "peak", which is related to offset
-    guess_amp = np.std(yy) * 2.**0.5
+    guess_freq = abs(ff[np.argmax(Fyy[1:])+1])  # excluding the 0 freq. "peak",
+    guess_amp = np.std(yy) * 2.**0.5            # which is related to offset
     guess_offset = np.mean(yy)
     guess = np.array([guess_amp, 2.*np.pi*guess_freq, 0., guess_offset])
 
-    def sinfunc(x, A, k, p, c):  return A * np.sin(k*x + p) + c
+    def sinfunc(x, A, k, p, c): return A * np.sin(k*x + p) + c
     popt, pcov = curve_fit(sinfunc, xx, yy, p0=guess)
     A, k, p, c = popt
     wav_len = (2.*np.pi) / k
-    vel = wav_len * 0.4                         # f = 0.4 Hz, change if different
+    vel = wav_len * 0.4  # f = 0.4 Hz, change if different
     fitfunc = lambda x: A * np.sin(k*x + p) + c
     return {"amp": A, "wave_num": k, "phase": p, "offset": c,
             "wav_len": wav_len, "vel": vel, "fitfunc": fitfunc,
-            "maxcov": np.max(pcov), "rawres": (guess,popt,pcov)}
+            "maxcov": np.max(pcov), "rawres": (guess, popt, pcov)}
 
 # Example Usage
 # dataLoc ='D:/ekram/Desktop/test_0.4Hz_30Aps.txt'
