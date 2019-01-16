@@ -18,6 +18,7 @@ from tkinter import Tk, filedialog
 
 from CLfuncs import Deflection, Movement, Amplitude, Phase, Stiffness, Damping
 from CLfuncs import Relaxation, smooth, outputFiles, graphMax, joinAR, joinAR2
+from CLfuncs import fit_sin
 
 csvHeader = (
     'Index,Distance(Ang),Tunnel(nA),Ipd(mV),Extin(V),SpareAdcCh1(V),'
@@ -79,6 +80,7 @@ constants = np.genfromtxt(conLoc, skip_header=1)
 
 # TEST 06-25-2015: getting list of speeds from constant file
 speeds = sorted(set(constants[:, 8]))
+speed2 = np.zeros(len(dataFiles))
 
 # Create CSVs
 for x in range(len(dataFiles)):
@@ -88,8 +90,8 @@ for x in range(len(dataFiles)):
     data = np.genfromtxt(path.join(srcDir, currentfile), skip_header=21,
                          skip_footer=1)
     for x1 in range(data.shape[0]):
-        if (data[x1,13] == data[x1,14]) and (data[x1,14] == data[x1,15]):
-            data = data[:x1,:]
+        if (data[x1, 13] == data[x1, 14]) and (data[x1, 14] == data[x1, 15]):
+            data = data[:x1, :]
             break
     np.savetxt(path.join(csvDir, outputfile), data, header=csvHeader2,
                delimiter=',')
@@ -115,6 +117,10 @@ for x in range(len(dataFiles)):
         R_ADC5, R_ADC6, R_ADC7, R_ADC8) = data.T
     Extin = -Extin
     R_Extin = -R_Extin
+
+    # Calc speed from ADC3
+    res = fit_sin(Distance, ADC3)
+    speed2[x] = res['vel']
 
     pos = np.zeros(rows)        # Actual Position (d+z)
     amp = np.zeros(rows)        # Amplitude
@@ -256,6 +262,11 @@ for x in range(len(dataFiles)):
     plt.close()
 
     print('File %d of %d completed.' % (x+1, len(dataFiles)))
+
+output2 = np.column_stack((np.asarray(dataFiles), constants[:, 8], speed2,
+                           constants[:, 9]))
+np.savetxt(path.join(dstDir, 'Speeds+Temps'), output2,
+           header='Curve Recorded_v Calc_V Temp(C)', comments="")
 
 print('Finished analyzing', path.split(srcDir)[1])
 print('It took {:.2f} seconds to analyze %d files.'.format(time.time()-start) %
