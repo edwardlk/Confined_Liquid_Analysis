@@ -119,6 +119,9 @@ for x in range(len(dataFiles)):
     # Calc speed from ADC3, assumes f = 0.4 Hz, change in function if different
     res = fit_sin(Distance, ADC3)
     speed2[x] = res['vel']
+    # Convert ADC4 to temperatures, using T(C) = 0.6*ADC4(V) + 5 for 01/19 data
+    # change going forward to T(C) = ADC4(V) - 9
+    Temps = np.round(0.6*ADC4 + 5, 1)
 
     pos = np.zeros(rows)        # Actual Position (d+z)
     amp = np.zeros(rows)        # Amplitude
@@ -166,11 +169,14 @@ for x in range(len(dataFiles)):
         t_R[x4] = Relaxation(k_tsavg[x4], gammaavg[x4], constants[x, 6])
         R_t_R[x4] = Relaxation(R_k_tsavg[x4], R_gammaavg[x4], constants[x, 6])
 
-    ExtinAR, DistAR, x5 = joinAR(Extin, R_Extin, Distance)
-    ADC1AR, Dist1AR = joinAR2(ADC1, R_ADC1, Distance, x5)
-    k_tsAR, Dist2AR = joinAR2(k_tsavg, R_k_tsavg, Distance, x5)
-    gammaavgAR, Dist3AR = joinAR2(gammaavg, R_gammaavg, Distance, x5)
-    t_RAR, Dist4AR = joinAR2(t_R, R_t_R, Distance, x5)
+    ExtinAR, DistAR, contIndex = joinAR(Extin, R_Extin, Distance)
+    ADC1AR, Dist1AR = joinAR2(ADC1, R_ADC1, Distance, contIndex)
+    k_tsAR, Dist2AR = joinAR2(k_tsavg, R_k_tsavg, Distance, contIndex)
+    gammaavgAR, Dist3AR = joinAR2(gammaavg, R_gammaavg, Distance, contIndex)
+    t_RAR, Dist4AR = joinAR2(t_R, R_t_R, Distance, contIndex)
+
+    # Get temperature at contact point
+    contTemp = Temps[contIndex - 1]
 
     # Output Calculations
     output = np.column_stack((Distance, pos, amp, phi, k_ts, k_tsavg, gamma,
@@ -253,7 +259,7 @@ for x in range(len(dataFiles)):
     plt.subplots_adjust(left=0.1, right=0.85)
     plt.suptitle(
         r'Curve %d: %d $\AA$/s @ %.1f C' %
-        (x+1, constants[x, 8], constants[x, 9]))
+        (x+1, constants[x, 8], contTemp))
 
     plt.savefig(path.join(dstDir, currentpic))
     # plt.show()
@@ -261,10 +267,10 @@ for x in range(len(dataFiles)):
 
     print('File %d of %d completed.' % (x+1, len(dataFiles)))
 
-output2 = np.column_stack((np.asarray(dataFiles), constants[:, 8], speed2,
+output2 = np.column_stack((constants[:, 8], speed2,
                            constants[:, 9]))
-np.savetxt(path.join(dstDir, 'Speeds+Temps.csv'), output2,
-           header='Curve Recorded_v Calc_V Temp(C)', comments="")
+np.savetxt(path.join(dstDir, 'Speeds+Temps.csv'), output2, delimiter=',',
+           header='Recorded_v,Calc_V,Temp(C)', comments="")
 
 print('Finished analyzing', path.split(srcDir)[1])
 print('It took {:.2f} seconds to analyze %d files.'.format(time.time()-start) %
