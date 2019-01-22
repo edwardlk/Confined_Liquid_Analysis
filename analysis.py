@@ -11,6 +11,7 @@
 # - error handling for folder/file selection
 
 import time
+import math
 from os import path, listdir, makedirs
 import numpy as np   #
 import matplotlib.pyplot as plt
@@ -258,8 +259,8 @@ for x in range(len(dataFiles)):
 
     plt.subplots_adjust(left=0.1, right=0.85)
     plt.suptitle(
-        r'Curve %d: %d $\AA$/s @ %.1f C' %
-        (x+1, constants[x, 8], contTemp))
+        r'Curve %d: %d $\AA$/s (%.2f measured) @ %.1f C' %
+        (x+1, math.ceil(speed2[x]), speed2[x], contTemp))
 
     plt.savefig(path.join(dstDir, currentpic))
     # plt.show()
