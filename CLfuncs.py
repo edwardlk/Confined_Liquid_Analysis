@@ -75,7 +75,13 @@ def graphMax(quantity, minMax):
         return minMax
 
 
+# May be worth it just to drop null data from the start...
 def joinAR(Extin, R_Extin, Distance):
+    """Joins the approach and retract arrays into 1 array, after flipping the
+    order of the retract array and rescaling the distance array so that the
+    contact occurs at the origin. Returns the new arrays and the index of the
+    first null point of the approach curve.
+    """
     step = np.abs(Distance[0] - Distance[1])
     for x5 in range(len(Extin)):
         if Extin[x5] == 0 or x5 == len(Extin)-1:
@@ -88,7 +94,8 @@ def joinAR(Extin, R_Extin, Distance):
             ExtinAR = np.append(ExtinAR1, np.flip(ExtinAR2))
             DistAR = np.append(DistAR1, np.flip(DistAR2))
             break
-    return ExtinAR, DistAR, x5
+    contactIndex = x5
+    return ExtinAR, DistAR, contactIndex
 
 
 def joinAR2(Extin, R_Extin, Distance, x5):
