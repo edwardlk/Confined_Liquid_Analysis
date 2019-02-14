@@ -133,7 +133,6 @@ def fit_sin(xx, yy):
     return {"amp": A, "wave_num": k, "phase": p, "offset": c,
             "wav_len": wav_len, "vel": vel, "fitfunc": fitfunc,
             "maxcov": np.max(pcov), "rawres": (guess, popt, pcov)}
-
 # Example Usage
 # dataLoc ='D:/ekram/Desktop/test_0.4Hz_30Aps.txt'
 # data = np.genfromtxt(dataLoc, skip_header=1)
@@ -149,3 +148,11 @@ def fit_sin(xx, yy):
 # plt.plot(Dist2, res["fitfunc"](Dist2), "r-", label="y fit curve", linewidth=2)
 # plt.show()
 # plt.close('all')
+
+
+def dac2temp(ADC4):
+    # have lookup array here
+    # find value closest to ADC[0]
+    # slice lookup array around found value
+    # lookup rest of values, return temperatures
+    return 1

@@ -120,9 +120,9 @@ for x in range(len(dataFiles)):
     # Calc speed from ADC3, assumes f = 0.4 Hz, change in function if different
     res = fit_sin(Distance, ADC3)
     speed2[x] = res['vel']
-    # Convert ADC4 to temperatures, using T(C) = 0.6*ADC4(V) + 5 for 01/19 data
-    # change going forward to T(C) = ADC4(V) - 9
-    Temps = np.round(0.6*ADC4 + 5, 1)
+    # for Temperatures, first remove offset (see calibration data 2/14/2019)
+    ADC4 = 0.002466422 * ((ADC4 + 18.06956349) / 0.00246086) - 18.13313797
+    R_ADC4 = 0.002466422 * ((R_ADC4 + 18.06956349) / 0.00246086) - 18.13313797
 
     pos = np.zeros(rows)        # Actual Position (d+z)
     amp = np.zeros(rows)        # Amplitude
