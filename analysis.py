@@ -16,6 +16,7 @@ from os import path, listdir, makedirs
 import numpy as np   #
 import matplotlib.pyplot as plt
 from tkinter import Tk, filedialog
+import scipy.stats as sps
 
 from CLfuncs import Deflection, Movement, Amplitude, Phase, Stiffness, Damping
 from CLfuncs import Relaxation, smooth, outputFiles, graphMax, joinAR, joinAR2
@@ -31,6 +32,12 @@ csvHeader2 = (
     'ADC1(V),ADC2(V),ADC3(V),ADC4(V),ADC5(V),ADC6(V),ADC7(V),ADC8(V),'
     'RTunnel(nA),RIpd(mV),RExtin(V),'
     'RADC1(V),RADC2(V),RADC3(V),RADC4(V),RADC5(V),RADC6(V),RADC7(V),RADC8(V),')
+
+csvHeader3 = (
+    'Index,Distance(Ang),Tunnel(nA),Ipd(mV),Extin(V),'
+    'ADC1(V),ADC2(V),ADC3(V),ADC4(C),'
+    'RTunnel(nA),RIpd(mV),RExtin(V),'
+    'RADC1(V),RADC2(V),RADC3(V),RADC4(C),')
 
 # Designate input and output directories.
 root = Tk()
@@ -82,20 +89,22 @@ constants = np.genfromtxt(conLoc, skip_header=1)
 # TEST 06-25-2015: getting list of speeds from constant file
 speeds = sorted(set(constants[:, 8]))
 speed2 = np.zeros(len(dataFiles))
+temps2 = np.zeros(len(dataFiles))
 
 # Create CSVs
-for x in range(len(dataFiles)):
-    currentfile = dataFiles[x]
-    outputfile = csvOutput[x]
-
-    data = np.genfromtxt(path.join(srcDir, currentfile), skip_header=21,
-                         skip_footer=1)
-    for x1 in range(data.shape[0]):
-        if (data[x1, 13] == data[x1, 14]) and (data[x1, 14] == data[x1, 15]):
-            data = data[:x1, :]
-            break
-    np.savetxt(path.join(csvDir, outputfile), data, header=csvHeader2,
-               delimiter=',')
+# for x in range(len(dataFiles)):
+#     currentfile = dataFiles[x]
+#     outputfile = csvOutput[x]
+#
+#     data = np.genfromtxt(path.join(srcDir, currentfile), skip_header=21,
+#                          skip_footer=1)
+#     for x1
+# in range(data.shape[0]):
+#         if (data[x1, 13] == data[x1, 14]) and (data[x1, 14] == data[x1, 15]):
+#             data = data[:x1, :]
+#             break
+#     np.savetxt(path.join(csvDir, outputfile), data, header=csvHeader2,
+#                delimiter=',')
 
 # Main analysis
 for x in range(len(dataFiles)):
@@ -106,6 +115,10 @@ for x in range(len(dataFiles)):
     # skip_header = 21 for 1.16.13.3 8 ADC data, 20 for 4 ADC data
     data = np.genfromtxt(path.join(srcDir, currentfile), skip_header=21,
                          skip_footer=1)
+    for x1 in range(data.shape[0]):
+        if (data[x1, 13] == data[x1, 14]) and (data[x1, 14] == data[x1, 15]):
+            data = data[:x1, :]
+            break
 
     rows = data.shape[0]
     columns = data.shape[1]
@@ -177,7 +190,8 @@ for x in range(len(dataFiles)):
     t_RAR, Dist4AR = joinAR2(t_R, R_t_R, Distance, contIndex)
 
     # Get temperature at contact point
-    contTemp = rtdT[contIndex - 1]
+    contTemp = sps.mode(rtdT)[0][0]
+    temps2[x] = contTemp
 
     # Output Calculations
     output = np.column_stack((Distance, pos, amp, phi, k_ts, k_tsavg, gamma,
@@ -266,12 +280,18 @@ for x in range(len(dataFiles)):
     # plt.show()
     plt.close()
 
+    dataOut = np.column_stack((Index, Distance, Tunnel, Ipd, Extin, ADC1, ADC2,
+                               ADC3, rtdT, R_Tunnel, R_Ipd, R_Extin, R_ADC1,
+                               R_ADC2, R_ADC3, R_rtdT))
+
+    np.savetxt(path.join(csvDir, csvOutput[x]), dataOut, header=csvHeader3,
+               delimiter=',')
+
     print('File %d of %d completed.' % (x+1, len(dataFiles)))
 
-output2 = np.column_stack((constants[:, 8], speed2,
-                           constants[:, 9]))
+output2 = np.column_stack((speed2, temps2))
 np.savetxt(path.join(dstDir, 'Speeds+Temps.csv'), output2, delimiter=',',
-           header='Recorded_v,Calc_V,Temp(C)', comments="")
+           header='Calc_V,Temp(C)', comments="")
 
 print('Finished analyzing', path.split(srcDir)[1])
 print('It took {:.2f} seconds to analyze %d files.'.format(time.time()-start) %
