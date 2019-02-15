@@ -1,6 +1,7 @@
 import math
 import numpy as np
 from scipy.optimize import curve_fit
+from lookup import lookupArray
 
 
 def Deflection(Ipd, Sensitivity):
@@ -151,8 +152,20 @@ def fit_sin(xx, yy):
 
 
 def dac2temp(ADC4):
-    # have lookup array here
-    # find value closest to ADC[0]
-    # slice lookup array around found value
-    # lookup rest of values, return temperatures
-    return 1
+    '''Rescales ADC4 ndarray offset, then converts to temperature ndarray
+    '''
+    # for offset info, see calibration data 2/14/2019
+    ADC4 = 0.002466422 * ((ADC4 + 18.06956349) / 0.00246086) - 18.13313797
+
+    listT = np.full(len(ADC4), 99.99)
+    (volt, rtd, resist, temper) = lookupArray.T
+    id1 = (np.abs(volt - ADC4[0])).argmin()
+    if id1 < 30:
+        id1 = 0
+    else:
+        id1 = id1 - 30
+    voltLook = volt[id1:(id1+60)]
+    temperLook = temper[id1:(id1+60)]
+    for x in range(len(ADC4)):
+        listT[x] = temperLook[(np.abs(voltLook - ADC4[x])).argmin()]
+    return listT

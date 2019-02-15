@@ -19,7 +19,7 @@ from tkinter import Tk, filedialog
 
 from CLfuncs import Deflection, Movement, Amplitude, Phase, Stiffness, Damping
 from CLfuncs import Relaxation, smooth, outputFiles, graphMax, joinAR, joinAR2
-from CLfuncs import fit_sin
+from CLfuncs import fit_sin, dac2temp
 
 csvHeader = (
     'Index,Distance(Ang),Tunnel(nA),Ipd(mV),Extin(V),SpareAdcCh1(V),'
@@ -120,9 +120,9 @@ for x in range(len(dataFiles)):
     # Calc speed from ADC3, assumes f = 0.4 Hz, change in function if different
     res = fit_sin(Distance, ADC3)
     speed2[x] = res['vel']
-    # for Temperatures, first remove offset (see calibration data 2/14/2019)
-    ADC4 = 0.002466422 * ((ADC4 + 18.06956349) / 0.00246086) - 18.13313797
-    R_ADC4 = 0.002466422 * ((R_ADC4 + 18.06956349) / 0.00246086) - 18.13313797
+    # conver to temperatures
+    rtdT = dac2temp(ADC4)
+    R_rtdT = dac2temp(R_ADC4)
 
     pos = np.zeros(rows)        # Actual Position (d+z)
     amp = np.zeros(rows)        # Amplitude
@@ -177,7 +177,7 @@ for x in range(len(dataFiles)):
     t_RAR, Dist4AR = joinAR2(t_R, R_t_R, Distance, contIndex)
 
     # Get temperature at contact point
-    contTemp = Temps[contIndex - 1]
+    contTemp = rtdT[contIndex - 1]
 
     # Output Calculations
     output = np.column_stack((Distance, pos, amp, phi, k_ts, k_tsavg, gamma,
