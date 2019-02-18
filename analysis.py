@@ -91,21 +91,6 @@ speeds = sorted(set(constants[:, 8]))
 speed2 = np.zeros(len(dataFiles))
 temps2 = np.zeros(len(dataFiles))
 
-# Create CSVs
-# for x in range(len(dataFiles)):
-#     currentfile = dataFiles[x]
-#     outputfile = csvOutput[x]
-#
-#     data = np.genfromtxt(path.join(srcDir, currentfile), skip_header=21,
-#                          skip_footer=1)
-#     for x1
-# in range(data.shape[0]):
-#         if (data[x1, 13] == data[x1, 14]) and (data[x1, 14] == data[x1, 15]):
-#             data = data[:x1, :]
-#             break
-#     np.savetxt(path.join(csvDir, outputfile), data, header=csvHeader2,
-#                delimiter=',')
-
 # Main analysis
 for x in range(len(dataFiles)):
     currentfile = dataFiles[x]
@@ -280,6 +265,7 @@ for x in range(len(dataFiles)):
     # plt.show()
     plt.close()
 
+    # stack all columns for this, need for xlsx sheets
     dataOut = np.column_stack((Index, Distance, Tunnel, Ipd, Extin, ADC1, ADC2,
                                ADC3, rtdT, R_Tunnel, R_Ipd, R_Extin, R_ADC1,
                                R_ADC2, R_ADC3, R_rtdT))
@@ -290,6 +276,8 @@ for x in range(len(dataFiles)):
     print('File %d of %d completed.' % (x+1, len(dataFiles)))
 
 output2 = np.column_stack((speed2, temps2))
+
+# Put all constants in this csv, to use when creating xlsx sheets & for notes
 np.savetxt(path.join(dstDir, 'Speeds+Temps.csv'), output2, delimiter=',',
            header='Calc_V,Temp(C)', comments="")
 
