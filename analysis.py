@@ -270,8 +270,8 @@ for x in range(len(dataFiles)):
 constants2['Speed(A/s)'] = speed2
 constants2['TempC'] = temps2
 # change to pandas output
-np.savetxt(path.join(dstDir, 'Speeds+Temps.csv'), output2, delimiter=',',
-           header='Calc_V,Temp(C)', comments="")
+constants2.to_csv(path_or_buf=path.join(dstDir, 'Speeds+Temps.csv'),
+                  index=False)
 
 print('Finished analyzing', path.split(srcDir)[1])
 print('It took {:.2f} seconds to analyze %d files.'.format(time.time()-start) %
