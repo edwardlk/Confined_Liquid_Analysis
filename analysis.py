@@ -17,27 +17,17 @@ import numpy as np   #
 import matplotlib.pyplot as plt
 from tkinter import Tk, filedialog
 import scipy.stats as sps
+import pandas as pd
 
 from CLfuncs import Deflection, Movement, Amplitude, Phase, Stiffness, Damping
 from CLfuncs import Relaxation, smooth, outputFiles, graphMax, joinAR, joinAR2
 from CLfuncs import fit_sin, dac2temp
 
 csvHeader = (
-    'Index,Distance(Ang),Tunnel(nA),Ipd(mV),Extin(V),SpareAdcCh1(V),'
-    'SpareAdcCh2(V),RTunnel(nA),RIpd(mV),RExtin(V),RSpareAdcCh1(V),'
-    'RSpareAdcCh2(V)')
-
-csvHeader2 = (
-    'Index,Distance(Ang),Tunnel(nA),Ipd(mV),Extin(V),'
-    'ADC1(V),ADC2(V),ADC3(V),ADC4(V),ADC5(V),ADC6(V),ADC7(V),ADC8(V),'
-    'RTunnel(nA),RIpd(mV),RExtin(V),'
-    'RADC1(V),RADC2(V),RADC3(V),RADC4(V),RADC5(V),RADC6(V),RADC7(V),RADC8(V),')
-
-csvHeader3 = (
-    'Index,Distance(Ang),Tunnel(nA),Ipd(mV),Extin(V),'
-    'ADC1(V),ADC2(V),ADC3(V),ADC4(C),'
-    'RTunnel(nA),RIpd(mV),RExtin(V),'
-    'RADC1(V),RADC2(V),RADC3(V),RADC4(C),')
+    'Index,Distance(Ang),Tunnel(nA),Ipd(mV),Extin(V),ADC1(V),ADC2(V),ADC3(V),'
+    'ADC4(Temp-C),ADC5(V),ADC6(V),ADC7(V),ADC8(V),RTunnel(nA),RIpd(mV),'
+    'RExtin(V),RADC1(V),RADC2(V),RADC3(V),RADC4(Temp-C),RADC5(V),RADC6(V),'
+    'RADC7(V),RADC8(V)')
 
 # Designate input and output directories.
 root = Tk()
@@ -85,6 +75,7 @@ csvOutput = outputFiles(dataFiles, '.csv')
 #   n = file number
 #   m = [index, slope, V_batt, sens, t_c, Phase_off, freq, stiff, vel, Temp]
 constants = np.genfromtxt(conLoc, skip_header=1)
+constants2 = pd.read_csv(conLoc, sep='\t', header=0)
 
 # TEST 06-25-2015: getting list of speeds from constant file
 speeds = sorted(set(constants[:, 8]))
@@ -265,19 +256,20 @@ for x in range(len(dataFiles)):
     # plt.show()
     plt.close()
 
-    # stack all columns for this, need for xlsx sheets
     dataOut = np.column_stack((Index, Distance, Tunnel, Ipd, Extin, ADC1, ADC2,
-                               ADC3, rtdT, R_Tunnel, R_Ipd, R_Extin, R_ADC1,
-                               R_ADC2, R_ADC3, R_rtdT))
+                               ADC3, rtdT, ADC5, ADC6, ADC7, ADC8, R_Tunnel,
+                               R_Ipd, R_Extin, R_ADC1, R_ADC2, R_ADC3, R_rtdT,
+                               R_ADC5, R_ADC6, R_ADC7, R_ADC8))
 
-    np.savetxt(path.join(csvDir, csvOutput[x]), dataOut, header=csvHeader3,
+    np.savetxt(path.join(csvDir, csvOutput[x]), dataOut, header=csvHeader,
                delimiter=',')
 
     print('File %d of %d completed.' % (x+1, len(dataFiles)))
 
-output2 = np.column_stack((speed2, temps2))
-
 # Put all constants in this csv, to use when creating xlsx sheets & for notes
+constants2['Speed(A/s)'] = speed2
+constants2['TempC'] = temps2
+# change to pandas output
 np.savetxt(path.join(dstDir, 'Speeds+Temps.csv'), output2, delimiter=',',
            header='Calc_V,Temp(C)', comments="")
 

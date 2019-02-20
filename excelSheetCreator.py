@@ -2,6 +2,20 @@ import numpy as np
 import pandas as pd
 from openpyxl import load_workbook
 from shutil import copyfile
+from os import path, listdir, makedirs
+from tkinter import Tk, filedialog
+
+root = Tk()
+root.withdraw()
+
+info = ('Please select the folder that contains the data to convert to xlsx.')
+
+srcDir = filedialog.askdirectory(parent=root, initialdir="/", title=info)
+dstDir = path.join(srcDir, 'xlsx-output')
+
+# Get file list from source directory
+dataFiles = listdir(srcDir)
+dataFiles.sort()
 
 dataFile = 'D:/ekram/Desktop/2019-02-13/009.txt'
 data = np.genfromtxt(dataFile, skip_header=21, skip_footer=1)
