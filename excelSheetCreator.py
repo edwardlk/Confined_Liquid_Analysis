@@ -1,5 +1,5 @@
 import math
-import numpy as np
+import time
 import pandas as pd
 from openpyxl import load_workbook
 from shutil import copyfile
@@ -20,6 +20,10 @@ info = ('Please select the folder that contains the data to convert to xlsx.')
 srcDir = filedialog.askdirectory(parent=root, initialdir="/", title=info)
 dstDir = path.join(srcDir, 'xlsx-output')
 
+# Get file list from source directory
+dataFiles = listdir(srcDir)
+dataFiles.sort()
+
 info2 = 'Select the file that contains the constants.'
 conLoc = filedialog.askopenfilename(parent=root, initialdir=srcDir,
                                     title=info2)
@@ -30,9 +34,7 @@ print(constants)
 if not path.exists(dstDir):
     makedirs(dstDir)
 
-# Get file list from source directory
-dataFiles = listdir(srcDir)
-dataFiles.sort()
+start = time.time()
 
 for x in range(len(dataFiles)):
     dataFile = path.join(srcDir, dataFiles[x])
@@ -43,14 +45,14 @@ for x in range(len(dataFiles)):
     # df = pd.DataFrame(data=data, columns=csvHeader2)
 
     # constOut = constants[x:(x+1)].transpose()
-    constOut = constants.iloc[x] # .transpose()
+    constOut = constants.iloc[x]
 
-    excelBookName = (str(int(math.ceil(constants.at[x, 'Speed(A/s)']))).zfill(2) +
-                     'Aps-LTAFM-' + str(x+1).zfill(3) + '.xlsx')
+    excelBookName = (str(int(math.ceil(constants.at[x, 'Speed(A/s)'])))
+                     .zfill(2) + 'Aps-LTAFM-' + str(x+1).zfill(3) + '.xlsx')
     excelBookLoc = path.join(dstDir, excelBookName)
 
     # Put xlsx model file in github folder?
-    copyfile('D:/ekram/Desktop/___Aps-LTAFM-000v4.xlsx', excelBookLoc)
+    copyfile('D:/ekram/Desktop/__Aps-LTAFM-000v6.xlsx', excelBookLoc)
 
     book = load_workbook(excelBookLoc)
     writer = pd.ExcelWriter(excelBookLoc, engine='openpyxl', mode='a')
@@ -62,3 +64,9 @@ for x in range(len(dataFiles)):
     constOut.to_excel(writer, sheet_name='Approach', header=False, startrow=1)
 
     writer.save()
+
+    print('File %d of %d completed.' % (x+1, len(dataFiles)))
+
+print('Finished converting data.')
+print('It took {:.2f} seconds to convert %d files.'.format(time.time()-start) %
+      (len(dataFiles)))
