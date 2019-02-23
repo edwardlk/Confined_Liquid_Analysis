@@ -139,14 +139,15 @@ def fit_sin(xx, yy):
 # data = np.genfromtxt(dataLoc, skip_header=1)
 # rows = data.shape[0]
 # columns = data.shape[1]
-# (Index, Distance, Tunnel, Ipd, Extin, ADC1, ADC2, ADC3, ADC4, ADC5, ADC6, ADC7, ADC8) = data.T
+# (Index, Distance, ...) = data.T
 # res = fit_sin(Distance, ADC3)
-# print( "Amplitude=%(amp)s, Wave Number=%(wave_num)s, wavLen=%(wav_len)s, vel=%(vel)s, Max. Cov.=%(maxcov)s" % res )
+# print( "Amplitude=%(amp)s, Wave Number=%(wave_num)s,
+#       wavLen=%(wav_len)s, vel=%(vel)s, Max. Cov.=%(maxcov)s" % res )
 # Dist2 = np.linspace(min(Distance), max(Distance), 5*len(Distance))
 # # PLOT CALCULATED VALUES
 # fig = plt.figure()
 # plt.plot(Distance, ADC3, 'o')
-# plt.plot(Dist2, res["fitfunc"](Dist2), "r-", label="y fit curve", linewidth=2)
+# plt.plot(Dist2, res["fitfunc"](Dist2), label="y fit curve", linewidth=2)
 # plt.show()
 # plt.close('all')
 

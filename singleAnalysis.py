@@ -40,7 +40,7 @@ constants = np.genfromtxt(conLoc, skip_header=1)
 
 x = fileNum - 1
 
-# # 0:Index 1:Distance(Ang) 2:Tunnel(nA) 3:Ipd(mV) 4:Extin(V) 5:ADC1(V) 6:ADC2(V)
+# # 0:Index 1:Dist(Ang) 2:Tunnel(nA) 3:Ipd(mV) 4:Extin(V) 5:ADC1(V) 6:ADC2(V)
 # # 7:R_Tunnel(nA) 8:R_Ipd(mV) 9:R_Extin(V) 10:R_ADC1(V) 11:R_ADC2(V)
 # data = np.genfromtxt(dataLoc, skip_header=20, skip_footer=1)
 # rows = data.shape[0]
