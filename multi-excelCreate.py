@@ -26,7 +26,7 @@ def fileConvert(x, srcDir, dataFile, constants, dstDir):
                      .zfill(2) + 'Aps-LTAFM-' + str(x+1).zfill(3) + '.xlsx')
     excelBookLoc = path.join(dstDir, excelBookName)
 
-    copyfile('J:/_data/__Aps-LTAFM-000v6.xlsx', excelBookLoc)
+    copyfile('D:/ekram/Desktop/__Aps-LTAFM-000v6.xlsx', excelBookLoc)
 
     book = load_workbook(excelBookLoc)
     writer = pd.ExcelWriter(excelBookLoc, engine='openpyxl', mode='a')
@@ -38,6 +38,8 @@ def fileConvert(x, srcDir, dataFile, constants, dstDir):
     constOut.to_excel(writer, sheet_name='Approach', header=False, startrow=1)
 
     writer.save()
+
+    print('File %d completed.' % (x+1))
 
 
 def main():
@@ -66,16 +68,16 @@ def main():
 
     start = time.time()
 
-    # if __name__ == "__main__":
-    processes = [mp.Process(target=fileConvert, args=(x, srcDir, dataFiles[x], constants, dstDir,)) for x in range(len(dataFiles))]
-    for p in processes:
-        p.start()
-    for p in processes:
-        p.join()
+    pool = mp.Pool(processes=5)
+    for x in range(len(dataFiles)):
+        pool.apply_async(fileConvert, args=(x, srcDir, dataFiles[x],
+                                            constants, dstDir,))
+    pool.close()
+    pool.join()
 
     print('Finished converting data.')
-    print('It took {:.2f} seconds to convert %d files.'.format(time.time()-start) %
-          (len(dataFiles)))
+    print('It took {:.2f} seconds to convert %d files.'
+          .format(time.time() - start) % (len(dataFiles)))
 
 
 if __name__ == '__main__':
