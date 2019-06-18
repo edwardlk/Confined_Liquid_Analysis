@@ -8,7 +8,7 @@ from tkinter import Tk, filedialog
 from CLfuncs import Deflection, Movement, Amplitude, Phase, Stiffness, Damping
 from CLfuncs import Relaxation, smooth, graphMax, joinAR, joinAR2
 
-fileAsk = True
+fileAsk = False
 if fileAsk:
     # Designate data file to analyze.
     root = Tk()
@@ -22,8 +22,8 @@ if fileAsk:
     print("dataLoc =", dataLoc)
     print("conLoc =", conLoc)
 else:
-    dataLoc = 'C:/Users/ekram/Desktop/2018-08-22_water/water-012.txt'
-    conLoc = 'C:/Users/ekram/Desktop/2018-08-22_water/constants.txt'
+    dataLoc = 'D:/ekram/Desktop/2019-03-17/003.txt'
+    conLoc = 'D:/ekram/Desktop/2019-03-17/constants.txt'
 
 dataFile = path.split(dataLoc)[1]
 conFile = path.split(conLoc)[1]
@@ -107,16 +107,19 @@ gammaavgAR, Dist3AR = joinAR2(gammaavg, R_gammaavg, Distance, x5)
 t_RAR, Dist4AR = joinAR2(t_R, R_t_R, Distance, x5)
 
 print(len(DistAR))
-if len(DistAR) < 207:
-    graphT = 0
-    graphB = len(DistAR)
-else:
-    temp = int(len(DistAR)/2)
-    graphT = temp - 103
-    graphB = temp + 103
+# if len(DistAR) < 207:
+#     graphT = 0
+#     graphB = len(DistAR)
+# else:
+#     temp = int(len(DistAR)/2)
+#     graphT = temp - 103
+#     graphB = temp + 103
+
+graphT = 0
+graphB = len(DistAR)
 
 # PLOT CALCULATED VALUES
-fig = plt.figure(figsize=(6, 7))
+fig = plt.figure(figsize=(16, 9))
 plt.subplots_adjust(top=0.93)
 
 ax1 = fig.add_subplot(311)

@@ -190,16 +190,19 @@ for x in range(len(dataFiles)):
     # show()
     # savefig(currentpic)
 
-    if len(DistAR) < 207:
-        graphT = 0
-        graphB = len(DistAR)
-    else:
-        temp = int(len(DistAR)/2)
-        graphT = temp - 103
-        graphB = temp + 103
+    # if len(DistAR) < 207:
+    #     graphT = 0
+    #     graphB = len(DistAR)
+    # else:
+    #     temp = int(len(DistAR)/2)
+    #     graphT = temp - 103
+    #     graphB = temp + 103
+
+    graphT = 0
+    graphB = len(DistAR)
 
     # PLOT CALCULATED VALUES
-    fig = plt.figure(figsize=(6, 7))
+    fig = plt.figure(figsize=(16, 9))
 
     ax1 = fig.add_subplot(311)
     plt.axvline(x=0)
@@ -220,14 +223,14 @@ for x in range(len(dataFiles)):
     ax3.plot(Dist2AR[graphT:graphB], k_tsAR[graphT:graphB], 'r.-')
     ax3.set_xlabel('Distance (Angstroms)')
     ax3.set_ylabel('Stiffness', color='r')
-    # ax3.set_ylim([0, graphMax(k_tsAR, 12)])
+    ax3.set_ylim([-1, np.percentile(k_tsAR[graphT:graphB], 95)])
     for tl in ax3.get_yticklabels():
         tl.set_color('r')
 
     ax4 = ax3.twinx()
     ax4.plot(Dist3AR[graphT:graphB], gammaavgAR[graphT:graphB], 'b.-')
     ax4.set_ylabel('Damping Coefficient', color='b')
-    # ax4.set_ylim([0, graphMax(gammaavg, 0.002)])
+    ax4.set_ylim([0, np.percentile(gammaavgAR[graphT:graphB], 95)])
     for tl in ax4.get_yticklabels():
         tl.set_color('b')
 
